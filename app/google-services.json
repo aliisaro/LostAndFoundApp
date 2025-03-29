@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "20654870978",
+    "project_id": "mobiliikehitysprojekti",
+    "storage_bucket": "mobiliikehitysprojekti.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20654870978:android:b18b40acd787ae1619865b",
+        "android_client_info": {
+          "package_name": "com.example.lostandfoundapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6FHalqOqdGBIaL8Yf7iFrS8rLcKUf27o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

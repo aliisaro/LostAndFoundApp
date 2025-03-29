@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    //Lisätty
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,4 +59,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Lisätty
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.firebase:firebase-auth") // For authentication
+    implementation ("com.google.firebase:firebase-firestore") // For Firestore database
+    implementation ("com.google.firebase:firebase-storage") // For image uploads
+    implementation("com.google.android.gms:play-services-maps")// Google Maps
+    implementation("com.google.android.gms:play-services-location") // GPS (Fused Location Provider)
+    implementation("androidx.camera:camera-core:1.3.2")// CameraX
+    implementation("androidx.camera:camera-camera2:1.3.2")
+    implementation("androidx.camera:camera-lifecycle:1.3.2")
 }

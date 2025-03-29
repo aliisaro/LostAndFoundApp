@@ -13,6 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lostandfoundapp.ui.theme.LostAndFoundAppTheme
 
+import com.google.firebase.firestore.FirebaseFirestore
+val db = FirebaseFirestore.getInstance() // Firestore instance
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
