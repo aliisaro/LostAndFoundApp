@@ -1,4 +1,4 @@
-package com.example.lostandfoundapp
+package com.example.lostandfoundapp.userInterface
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
