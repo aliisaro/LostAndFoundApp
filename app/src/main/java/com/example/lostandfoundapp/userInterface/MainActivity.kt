@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.lostandfoundapp.ui.theme.LostAndFoundAppTheme
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHost
 
 import com.google.firebase.firestore.FirebaseFirestore
 val db = FirebaseFirestore.getInstance() // Firestore instance
@@ -23,29 +25,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LostAndFoundAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                Navigation()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun AppPreview() {
     LostAndFoundAppTheme {
-        Greeting("Android")
+        // Your MainContent goes here
+        Navigation()
     }
 }
