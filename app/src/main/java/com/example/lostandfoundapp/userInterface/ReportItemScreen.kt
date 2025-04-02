@@ -10,22 +10,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun ReportItemScreen(navController: NavHostController) {
     Column(
         modifier = androidx.compose.ui.Modifier.fillMaxSize().padding(16.dp)
     )
     {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Register screen not done yet")
+        Text(text = "Report item form not done yet")
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = { navController.navigate("login") }) {
-            Text("Go to login page")
+        Button(onClick = { navController.navigate("home") }) {
+            Text("Go back")
         }
     }
 }

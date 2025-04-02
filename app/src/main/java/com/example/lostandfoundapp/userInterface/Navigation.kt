@@ -13,28 +13,21 @@ fun Navigation() {
 
     val user = FirebaseAuth.getInstance().currentUser
 
-    // logs in a test user by default
-    // delete when register and login screens are done
-    if (user == null) {
-        // Log in with a test user by default (using FirebaseAuth)
-        FirebaseAuth.getInstance().signInWithEmailAndPassword("testuser@test.com", "Test123?")
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Logged in successfully
-                    Log.d("Login", "Logged in with test user")
-                } else {
-                    // Handle failed login
-                    Log.d("Login", "Failed to log in test user: ${task.exception?.message}")
-                }
-            }
-    }
-
     NavHost(navController = navController, startDestination = if (user != null) "home" else "login") {
+        composable("login") {
+            LoginScreen(navController)
+        }
+        composable("register") {
+            RegisterScreen(navController)
+        }
         composable("home") {
             HomeScreen(navController)
         }
         composable("map") {
             MapScreen(navController)
+        }
+        composable("reportItem") {
+            ReportItemScreen(navController)
         }
         composable("loggedOutScreen") {
             LoggedOutScreen(navController)

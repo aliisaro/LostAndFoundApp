@@ -14,12 +14,20 @@ fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(20.dp))
+
         Text(text = "Welcome to Lost & Found App!")
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Go to map screen
         Button(onClick = { navController.navigate("map") }) {
             Text("Go to Map")
+        }
+
+        // Go to report item screen
+        Button(onClick = { navController.navigate("reportItem") }) {
+            Text("Report item")
         }
 
         // Log out button
