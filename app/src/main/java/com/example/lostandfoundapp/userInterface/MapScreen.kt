@@ -1,24 +1,41 @@
 package com.example.lostandfoundapp.userInterface
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.google.android.gms.maps.UiSettings
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberMarkerState
-
+import com.google.maps.android.compose.*
 
 @Composable
 fun MapScreen(navController: NavController) {
+    val context = LocalContext.current
+    var locationPermissionGranted by remember { mutableStateOf(false) }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        locationPermissionGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
+
+    // Check if permissions are granted
+    LaunchedEffect(Unit) {
+        locationPermissionGranted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
@@ -38,14 +55,27 @@ fun MapScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            GoogleMapView()
+            if (!locationPermissionGranted) {
+                Button(onClick = {
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }) {
+                    Text("Enable Location")
+                }
+            } else {
+                GoogleMapView(locationPermissionGranted)
+            }
         }
     }
 }
 
 @Composable
-fun GoogleMapView() {
-    val location = LatLng(60.16952000, 24.93545000) // Example location (Helsinki)
+fun GoogleMapView(locationPermissionGranted: Boolean) {
+    val location = LatLng(60.16952000, 24.93545000) // Default to Helsinki
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(location, 12f)
     }
@@ -53,12 +83,15 @@ fun GoogleMapView() {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
+        properties = MapProperties(
+            isMyLocationEnabled = locationPermissionGranted // Enable user location
+        ),
         uiSettings = remember {
-            com.google.maps.android.compose.MapUiSettings(
-                zoomControlsEnabled = true, // Enables zoom buttons
-                scrollGesturesEnabled = true, // Enables panning
-                zoomGesturesEnabled = true, // Enables pinch-to-zoom
-                tiltGesturesEnabled = true, // Allows tilting
+            MapUiSettings(
+                zoomControlsEnabled = true,
+                scrollGesturesEnabled = true,
+                zoomGesturesEnabled = true,
+                tiltGesturesEnabled = true
             )
         }
     ) {

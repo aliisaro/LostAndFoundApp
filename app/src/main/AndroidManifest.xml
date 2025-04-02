@@ -24,11 +24,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Lisätty maps API key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}"
         />
 
     </application>
+
+    <!-- Lisätty location permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 </manifest>

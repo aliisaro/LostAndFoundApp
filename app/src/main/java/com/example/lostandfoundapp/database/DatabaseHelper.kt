@@ -23,7 +23,6 @@ class DatabaseHelper {
                 email = email,
                 username = username,
                 profilepicture = "", // empty for now
-                location = null // empty for now
             )
 
             // Save user data in Firestore
