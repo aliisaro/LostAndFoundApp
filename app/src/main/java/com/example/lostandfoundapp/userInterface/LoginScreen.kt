@@ -26,8 +26,6 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
-
         // Temporary login button (tämän voi poistaa kun login form on tehty)
         Button(onClick = {
             // Log in test user

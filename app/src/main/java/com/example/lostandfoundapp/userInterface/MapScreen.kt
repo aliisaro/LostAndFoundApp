@@ -53,8 +53,6 @@ fun MapScreen(navController: NavController) {
                 Text("Go Back")
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
             if (!locationPermissionGranted) {
                 Button(onClick = {
                     permissionLauncher.launch(
