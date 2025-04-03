@@ -26,25 +26,26 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Temporary login button (tämän voi poistaa kun login form on tehty)
+        /////// Temporary login button (tämän voi poistaa kun login form on tehty)////
         Button(onClick = {
             // Log in test user
-            FirebaseAuth.getInstance().signInWithEmailAndPassword("testuser@test.com", "Test123?")
+            FirebaseAuth.getInstance().signInWithEmailAndPassword("testi@example.com", "Password123")
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Logged in successfully
                         Log.d("Login", "Logged in with test user")
+                        // Navigate to the home screen when logged in
+                        navController.navigate("home")
                     } else {
                         // Handle failed login
                         Log.d("Login", "Failed to log in test user: ${task.exception?.message}")
                     }
                 }
 
-            // Navigate to the home screen when logged in
-            navController.navigate("home")
         }) {
             Text("Login with test user")
         }
+        ////////////////////////////////////////////////////////////////////////
 
         Button(onClick = { navController.navigate("register") }) {
             Text("Go to Register page")
