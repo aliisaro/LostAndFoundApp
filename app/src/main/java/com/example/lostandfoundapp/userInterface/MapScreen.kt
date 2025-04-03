@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.lostandfoundapp.model.Item
 import com.example.lostandfoundapp.viewmodel.ItemViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -91,6 +92,9 @@ fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
         position = CameraPosition.fromLatLngZoom(location, 12f)
     }
 
+    // Store the selected item (null if no selection)
+    var selectedItem by remember { mutableStateOf<Item?>(null) }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -106,23 +110,48 @@ fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
             )
         }
     ) {
-        // Add a marker for each item in your database
+        // Add a marker for each item
         items.forEach { item ->
             item.location?.let { location ->
                 Marker(
                     state = rememberMarkerState(position = LatLng(location.latitude, location.longitude)),
                     title = item.title,
-                    snippet = item.description
+                    snippet = item.description,
+                    onClick = {
+                        selectedItem = item // Set selected item
+                        true // Consume the event
+                    }
                 )
             }
         }
+    }
 
-        // Add a default marker for Helsinki (if needed)
-        Marker(
-            state = rememberMarkerState(position = location),
-            title = "Example Marker",
-            snippet = "This is Helsinki."
-        )
+    // Show image dialog when a marker is clicked
+    selectedItem?.let { item ->
+        ImageDialog(item = item, onDismiss = { selectedItem = null })
     }
 }
 
+@Composable
+fun ImageDialog(item: Item, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = item.title ?: "No Title") },
+        text = {
+            Column {
+                AsyncImage(
+                    model = item.imageUrl, // Load image from URL
+                    contentDescription = "Item Image",
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = item.description ?: "No Description")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
