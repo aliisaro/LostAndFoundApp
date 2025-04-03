@@ -1,5 +1,8 @@
 package com.example.lostandfoundapp.userInterface
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,22 +28,23 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
     val title = remember { mutableStateOf("") }
     val description = remember { mutableStateOf("") }
     val category = remember { mutableStateOf("") }
-    val imageUrl = remember { mutableStateOf("") }
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
     val latitude = remember { mutableStateOf("") }
     val longitude = remember { mutableStateOf("") }
 
-    // Single state variable to hold the feedback message
+    // For success and error messages
     val message = remember { mutableStateOf("") }
     val messageColor = remember { mutableStateOf(Color.Red) }
 
+    // For selecting images using ActivityResultContracts
+    val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        // This is where the selected image URI will be returned
+        imageUri.value = uri
+    }
+
     Column(
-        modifier = androidx.compose.ui.Modifier.fillMaxSize().padding(16.dp)
-    )
-    {
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(text = "Report item form in progress")
-
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(text = "Report Lost Item")
@@ -80,14 +84,19 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Image URL input field
-        Text("Image URL")
-        TextField(
-            value = imageUrl.value,
-            onValueChange = { imageUrl.value = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter image URL (optional)") }
-        )
+        // Image selection button
+        Button(onClick = { getContent.launch("image/*") }) {
+            Text(text = "Select Image")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Display selected image (if any)
+        if (imageUri.value != null) {
+            Text(text = "Selected image URI: ${imageUri.value}")
+        } else {
+            Text(text = "No image selected")
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -123,7 +132,7 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
                         title = title.value,
                         description = description.value,
                         category = category.value,
-                        imageUrl = imageUrl.value,
+                        imageUrl = imageUri.value.toString(),  // Store the URI string here
                         latitude = latitude.value.toDouble(),
                         longitude = longitude.value.toDouble()
                     )

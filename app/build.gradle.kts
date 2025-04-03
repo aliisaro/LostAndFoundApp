@@ -84,4 +84,8 @@ dependencies {
 
     // Navigation Compose dependency
     implementation("androidx.navigation:navigation-compose:2.7.5")
+
+    // Muuta
+    implementation("androidx.activity:activity-ktx:1.2.4") // for ActivityResultContracts
+    implementation("androidx.compose.material3:material3:1.0.0")// for material components
 }
