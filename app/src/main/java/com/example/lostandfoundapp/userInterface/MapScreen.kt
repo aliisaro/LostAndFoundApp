@@ -24,29 +24,27 @@ import com.google.maps.android.compose.Marker
 @Composable
 fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
     val context = LocalContext.current
-    var locationPermissionGranted by remember { mutableStateOf(false) }
+    val items by itemViewModel.items.observeAsState(listOf()) // Observe LiveData for items
+    val locationPermissionGranted = remember { mutableStateOf(false) }
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        locationPermissionGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+        locationPermissionGranted.value = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
-    // Check if permissions are granted
+    // Check and request permissions
     LaunchedEffect(Unit) {
-        locationPermissionGranted = ContextCompat.checkSelfPermission(
+        locationPermissionGranted.value = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Observe LiveData (items) from ViewModel using observeAsState
-    val items by itemViewModel.items.observeAsState(listOf()) // Using observeAsState to observe LiveData
-
-    // Fetch items when the screen is first composed
+    // Fetch items from the ViewModel
     LaunchedEffect(Unit) {
-        itemViewModel.getItems() // Fetch items from the database
+        itemViewModel.getItems()
     }
 
     Scaffold(
@@ -66,7 +64,7 @@ fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
                 Text("Go Back")
             }
 
-            if (!locationPermissionGranted) {
+            if (!locationPermissionGranted.value) {
                 Button(onClick = {
                     permissionLauncher.launch(
                         arrayOf(
@@ -78,39 +76,35 @@ fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
                     Text("Enable Location")
                 }
             } else {
-                GoogleMapView(locationPermissionGranted, items) // Pass the 'items' to GoogleMapView
+                // Show map when permission is granted
+                GoogleMapView(items = items)
             }
         }
     }
 }
 
-
 @Composable
-fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
-    val location = LatLng(60.16952000, 24.93545000) // Default to Helsinki
+fun GoogleMapView(items: List<Item>) {
+    val defaultLocation = LatLng(60.16952000, 24.93545000) // Default to Helsinki
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(location, 12f)
+        position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
     }
 
-    // Store the selected item (null if no selection)
     var selectedItem by remember { mutableStateOf<Item?>(null) }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         properties = MapProperties(
-            isMyLocationEnabled = locationPermissionGranted // Enable user location
+            isMyLocationEnabled = true // Always enable user location if permission is granted
         ),
-        uiSettings = remember {
-            MapUiSettings(
-                zoomControlsEnabled = true,
-                scrollGesturesEnabled = true,
-                zoomGesturesEnabled = true,
-                tiltGesturesEnabled = true
-            )
-        }
+        uiSettings = MapUiSettings(
+            zoomControlsEnabled = true,
+            scrollGesturesEnabled = true,
+            zoomGesturesEnabled = true,
+            tiltGesturesEnabled = true
+        )
     ) {
-        // Add a marker for each item
         items.forEach { item ->
             item.location?.let { location ->
                 Marker(
@@ -118,7 +112,7 @@ fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
                     title = item.title,
                     snippet = item.description,
                     onClick = {
-                        selectedItem = item // Set selected item
+                        selectedItem = item // Set selected item when marker is clicked
                         true // Consume the event
                     }
                 )
@@ -126,7 +120,7 @@ fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
         }
     }
 
-    // Show image dialog when a marker is clicked
+    // Show item image and description in a dialog when a marker is clicked
     selectedItem?.let { item ->
         ImageDialog(item = item, onDismiss = { selectedItem = null })
     }
@@ -140,7 +134,7 @@ fun ImageDialog(item: Item, onDismiss: () -> Unit) {
         text = {
             Column {
                 AsyncImage(
-                    model = item.imageUrl, // Load image from URL
+                    model = item.imageUrl,
                     contentDescription = "Item Image",
                     modifier = Modifier.fillMaxWidth()
                 )
