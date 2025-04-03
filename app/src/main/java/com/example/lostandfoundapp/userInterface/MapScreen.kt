@@ -7,17 +7,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.example.lostandfoundapp.model.Item
+import com.example.lostandfoundapp.viewmodel.ItemViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import com.google.maps.android.compose.Marker
 
 @Composable
-fun MapScreen(navController: NavController) {
+fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
     val context = LocalContext.current
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
@@ -34,6 +38,14 @@ fun MapScreen(navController: NavController) {
         locationPermissionGranted = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    // Observe LiveData (items) from ViewModel using observeAsState
+    val items by itemViewModel.items.observeAsState(listOf()) // Using observeAsState to observe LiveData
+
+    // Fetch items when the screen is first composed
+    LaunchedEffect(Unit) {
+        itemViewModel.getItems() // Fetch items from the database
     }
 
     Scaffold(
@@ -65,14 +77,15 @@ fun MapScreen(navController: NavController) {
                     Text("Enable Location")
                 }
             } else {
-                GoogleMapView(locationPermissionGranted)
+                GoogleMapView(locationPermissionGranted, items) // Pass the 'items' to GoogleMapView
             }
         }
     }
 }
 
+
 @Composable
-fun GoogleMapView(locationPermissionGranted: Boolean) {
+fun GoogleMapView(locationPermissionGranted: Boolean, items: List<Item>) {
     val location = LatLng(60.16952000, 24.93545000) // Default to Helsinki
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(location, 12f)
@@ -93,6 +106,18 @@ fun GoogleMapView(locationPermissionGranted: Boolean) {
             )
         }
     ) {
+        // Add a marker for each item in your database
+        items.forEach { item ->
+            item.location?.let { location ->
+                Marker(
+                    state = rememberMarkerState(position = LatLng(location.latitude, location.longitude)),
+                    title = item.title,
+                    snippet = item.description
+                )
+            }
+        }
+
+        // Add a default marker for Helsinki (if needed)
         Marker(
             state = rememberMarkerState(position = location),
             title = "Example Marker",
@@ -100,3 +125,4 @@ fun GoogleMapView(locationPermissionGranted: Boolean) {
         )
     }
 }
+

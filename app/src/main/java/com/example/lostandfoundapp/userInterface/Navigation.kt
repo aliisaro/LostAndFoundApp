@@ -14,7 +14,7 @@ fun Navigation() {
     val navController = rememberNavController()
 
     val user = FirebaseAuth.getInstance().currentUser
-    val reportItemViewModel: ItemViewModel = viewModel()  // ViewModel instance
+    val itemViewModel: ItemViewModel = viewModel()  // ViewModel instance
     val userViewModel: UserViewModel = viewModel()  // ViewModel instance
 
     NavHost(navController = navController, startDestination = if (user != null) "home" else "login") {
@@ -28,10 +28,10 @@ fun Navigation() {
             HomeScreen(navController)
         }
         composable("map") {
-            MapScreen(navController)
+            MapScreen(navController, itemViewModel)
         }
         composable("reportItem") {
-            ReportItemScreen(navController, reportItemViewModel)
+            ReportItemScreen(navController, itemViewModel)
         }
         composable("loggedOutScreen") {
             LoggedOutScreen(navController)
