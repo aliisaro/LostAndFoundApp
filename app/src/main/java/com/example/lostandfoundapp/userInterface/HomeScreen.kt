@@ -30,6 +30,10 @@ fun HomeScreen(navController: NavController) {
         Button(onClick = { navController.navigate("reportItem") }) {
             Text("Report item")
         }
+        //Go to take a picture with the camera
+        Button(onClick = { navController.navigate("camera") }) {
+            Text("Take picture")
+        }
 
         // Log out button
         Button(onClick = {

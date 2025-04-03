@@ -36,5 +36,8 @@ fun Navigation() {
         composable("loggedOutScreen") {
             LoggedOutScreen(navController)
         }
+        composable("camera") {
+            CameraScreen(navController)
+        }
     }
 }
