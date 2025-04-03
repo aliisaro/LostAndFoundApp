@@ -1,11 +1,15 @@
 package com.example.lostandfoundapp.database
 
+import com.example.lostandfoundapp.model.Item
 import com.example.lostandfoundapp.model.User
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.tasks.await
 
 class DatabaseHelper {
+
     private val db = FirebaseFirestore.getInstance()
 
     // Register user and save additional data in Firestore
@@ -35,6 +39,7 @@ class DatabaseHelper {
         }
     }
 
+    // Get user data from Firestore
     suspend fun getUserData(userUid: String): User? {
         return try {
             val documentSnapshot = db.collection("users").document(userUid).get().await()
@@ -44,4 +49,51 @@ class DatabaseHelper {
             null
         }
     }
+
+    // Add a lost item to Firestore
+    suspend fun addItem(title: String, description: String, category: String, imageUrl: String, latitude: Double, longitude: Double, onResult: (Boolean, String?) -> Unit) {
+        val auth = FirebaseAuth.getInstance()
+
+        // Check if user is authenticated
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            onResult(false, "User not authenticated")
+            return
+        }
+
+        // Create new Item object
+        val newItem = Item(
+            title = title,
+            description = description,
+            category = category,
+            imageUrl = imageUrl,
+            location = GeoPoint(latitude, longitude), // GeoPoint for latitude/longitude
+            reportedBy = currentUser.uid, // Save user UID as the reporter
+            registeredAt = Timestamp.now(),
+            lost = true
+        )
+
+        try {
+            // Save the new item in Firestore under 'items' collection
+            db.collection("items").add(newItem).await()
+            onResult(true, null) // Successfully added the item
+        } catch (e: Exception) {
+            onResult(false, e.message) // Handle errors
+        }
+    }
+
+    // Get all lost items from Firestore
+    suspend fun getItems(): List<Item> {
+        return try {
+            // Fetch all documents from the 'items' collection
+            val querySnapshot = db.collection("items").get().await()
+            // Convert Firestore documents to a list of Item objects
+            querySnapshot.documents.mapNotNull { it.toObject(Item::class.java) }
+        } catch (e: Exception) {
+            println("Error fetching items: ${e.message}")
+            emptyList() // Return an empty list in case of error
+        }
+    }
 }
+
+
