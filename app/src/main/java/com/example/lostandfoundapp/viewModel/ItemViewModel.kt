@@ -1,17 +1,13 @@
 package com.example.lostandfoundapp.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.lostandfoundapp.database.DatabaseHelper
-import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 
 class ItemViewModel(application: Application) : AndroidViewModel(application) {
-
-    // LiveData to hold success/failure status for adding items
-    val itemAddStatus = MutableLiveData<Pair<Boolean, String?>>()
 
     private val dbHelper = DatabaseHelper()
 
@@ -19,8 +15,12 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
     fun addItem(title: String, description: String, category: String, imageUrl: String, latitude: Double, longitude: Double) {
         viewModelScope.launch {
             dbHelper.addItem(title, description, category, imageUrl, latitude, longitude) { success, error ->
-                // Post the result to LiveData to observe it in the UI
-                itemAddStatus.postValue(Pair(success, error))
+                // Log the result in Logcat instead of using LiveData
+                if (success) {
+                    Log.d("ItemViewModel", "Item added successfully")
+                } else {
+                    Log.e("ItemViewModel", "Failed to add item: $error")
+                }
             }
         }
     }

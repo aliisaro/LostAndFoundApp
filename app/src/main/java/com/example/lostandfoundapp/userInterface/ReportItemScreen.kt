@@ -24,9 +24,9 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
     LaunchedEffect(Unit) {
         // Only call addItem if it's not already in progress
         itemViewModel.addItem(
-            title = "wallet",
+            title = "pip",
             description = "Testing item addition",
-            category = "wallet",
+            category = "clothing",
             imageUrl = "", // Empty for now
             latitude = 40.7128,
             longitude = -74.0060
