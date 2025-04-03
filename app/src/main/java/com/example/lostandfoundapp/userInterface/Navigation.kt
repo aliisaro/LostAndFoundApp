@@ -1,6 +1,5 @@
 package com.example.lostandfoundapp.userInterface
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -8,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.example.lostandfoundapp.viewmodel.ItemViewModel
+import com.example.lostandfoundapp.viewmodel.UserViewModel
 
 @Composable
 fun Navigation() {
@@ -15,13 +15,14 @@ fun Navigation() {
 
     val user = FirebaseAuth.getInstance().currentUser
     val reportItemViewModel: ItemViewModel = viewModel()  // ViewModel instance
+    val userViewModel: UserViewModel = viewModel()  // ViewModel instance
 
     NavHost(navController = navController, startDestination = if (user != null) "home" else "login") {
         composable("login") {
-            LoginScreen(navController)
+            LoginScreen(navController, userViewModel)
         }
         composable("register") {
-            RegisterScreen(navController)
+            RegisterScreen(navController, userViewModel)
         }
         composable("home") {
             HomeScreen(navController)

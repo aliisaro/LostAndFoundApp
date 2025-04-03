@@ -12,10 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lostandfoundapp.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, userViewModel: UserViewModel) {
     Column(
         modifier = androidx.compose.ui.Modifier.fillMaxSize().padding(16.dp)
     )
@@ -28,20 +29,12 @@ fun LoginScreen(navController: NavController) {
 
         /////// Temporary login button (tämän voi poistaa kun login form on tehty)////
         Button(onClick = {
-            // Log in test user
-            FirebaseAuth.getInstance().signInWithEmailAndPassword("testi@example.com", "Password123")
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        // Logged in successfully
-                        Log.d("Login", "Logged in with test user")
-                        // Navigate to the home screen when logged in
-                        navController.navigate("home")
-                    } else {
-                        // Handle failed login
-                        Log.d("Login", "Failed to log in test user: ${task.exception?.message}")
-                    }
-                }
+            val email = "testi@example.com"
+            val password = "Password123"
 
+            userViewModel.loginUser(email, password)
+            // Navigate to home after login
+            navController.navigate("home")
         }) {
             Text("Login with test user")
         }
