@@ -2,6 +2,7 @@ package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -112,6 +113,7 @@ fun GoogleMapView(items: List<Item>) {
                     title = item.title,
                     snippet = item.description,
                     onClick = {
+                        Log.d("GoogleMapView", "Marker clicked: ${item.title}, ${item.description}, ${item.imageUrl}") // Debugging
                         selectedItem = item // Set selected item when marker is clicked
                         true // Consume the event
                     }

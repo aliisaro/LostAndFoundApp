@@ -1,25 +1,20 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.lostandfoundapp.viewmodel.ItemViewModel
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import java.util.*
 
 @Composable
 fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewModel) {
@@ -125,29 +120,43 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
         // Button to add the item
         Button(onClick = {
             if (title.value.isNotEmpty() && description.value.isNotEmpty() && category.value.isNotEmpty() &&
-                latitude.value.isNotEmpty() && longitude.value.isNotEmpty()) {
-                try {
-                    // Convert latitude and longitude to Double before calling addItem
-                    itemViewModel.addItem(
-                        title = title.value,
-                        description = description.value,
-                        category = category.value,
-                        imageUrl = imageUri.value.toString(),  // Store the URI string here
-                        latitude = latitude.value.toDouble(),
-                        longitude = longitude.value.toDouble()
-                    )
-                    message.value = "Item added successfully!"
-                    messageColor.value = Color.Green
-                } catch (e: Exception) {
-                    message.value = "Failed to add item: ${e.localizedMessage}"
-                    messageColor.value = Color.Red
-                }
+                latitude.value.isNotEmpty() && longitude.value.isNotEmpty() && imageUri.value != null) {
+
+                // Upload image to Firebase Storage
+                val storageRef: StorageReference = FirebaseStorage.getInstance().reference
+                val imageRef = storageRef.child("items/${UUID.randomUUID()}.jpg")
+
+                imageRef.putFile(imageUri.value!!)
+                    .addOnSuccessListener { taskSnapshot ->
+                        imageRef.downloadUrl.addOnSuccessListener { uri ->
+                            // Get the image URL after upload
+                            val imageUrl = uri.toString()
+
+                            // Now add the item to Firestore with the image URL
+                            itemViewModel.addItem(
+                                title = title.value,
+                                description = description.value,
+                                category = category.value,
+                                imageUrl = imageUrl, // Pass the image URL here
+                                latitude = latitude.value.toDouble(),
+                                longitude = longitude.value.toDouble()
+                            )
+
+                            message.value = "Item added successfully!"
+                            messageColor.value = Color.Green
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        message.value = "Failed to upload image: ${e.message}"
+                        messageColor.value = Color.Red
+                    }
+
             } else {
                 message.value = "Please fill in all required fields."
                 messageColor.value = Color.Red
             }
         }) {
-            Text("Report item")
+            Text("Report Item")
         }
 
         // Display feedback message

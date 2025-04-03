@@ -69,13 +69,12 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-auth") // For authentication
     implementation ("com.google.firebase:firebase-firestore") // For Firestore database
+    implementation ("com.google.firebase:firebase-storage") // For image uploads
 
     // Google Play Services
-    implementation ("com.google.firebase:firebase-storage") // For image uploads
     implementation("com.google.android.gms:play-services-location:18.0.0") // GPS (Fused Location Provider)
     implementation("com.google.android.gms:play-services-maps:18.2.0") // Google maps
     implementation("com.google.maps.android:maps-compose:2.14.0")
-
 
     // CameraX dependencies
     implementation("androidx.camera:camera-core:1.3.2")
