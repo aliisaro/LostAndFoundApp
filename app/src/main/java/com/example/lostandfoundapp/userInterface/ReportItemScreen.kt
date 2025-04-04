@@ -11,13 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.lostandfoundapp.viewmodel.ItemViewModel
+import com.example.lostandfoundapp.database.DatabaseHelper
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
+import kotlinx.coroutines.launch
 
 @Composable
-fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewModel) {
+fun ReportItemScreen(navController: NavHostController) {
 
     // State variables to hold the form input values
     val title = remember { mutableStateOf("") }
@@ -36,6 +37,9 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
         // This is where the selected image URI will be returned
         imageUri.value = uri
     }
+
+    val coroutineScope = rememberCoroutineScope()
+    val databaseHelper = DatabaseHelper()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
@@ -133,17 +137,23 @@ fun ReportItemScreen(navController: NavHostController, itemViewModel: ItemViewMo
                             val imageUrl = uri.toString()
 
                             // Now add the item to Firestore with the image URL
-                            itemViewModel.addItem(
-                                title = title.value,
-                                description = description.value,
-                                category = category.value,
-                                imageUrl = imageUrl, // Pass the image URL here
-                                latitude = latitude.value.toDouble(),
-                                longitude = longitude.value.toDouble()
-                            )
-
-                            message.value = "Item added successfully!"
-                            messageColor.value = Color.Green
+                            coroutineScope.launch {
+                                try {
+                                    databaseHelper.addItem(
+                                        title = title.value,
+                                        description = description.value,
+                                        category = category.value,
+                                        imageUrl = imageUrl, // Pass the image URL here
+                                        latitude = latitude.value.toDouble(),
+                                        longitude = longitude.value.toDouble()
+                                    )
+                                    message.value = "Item added successfully!"
+                                    messageColor.value = Color.Green
+                                } catch (e: Exception) {
+                                    message.value = "Failed to add item: ${e.message}"
+                                    messageColor.value = Color.Red
+                                }
+                            }
                         }
                     }
                     .addOnFailureListener { e ->

@@ -12,53 +12,21 @@ class DatabaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Register user and save additional data in Firestore
-    suspend fun registerUser(email: String, password: String, username: String, onResult: (Boolean, String?) -> Unit) {
-        val auth = FirebaseAuth.getInstance()
-        try {
-            // Create user in Firebase Authentication
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-
-            // Get user UID from Firebase Authentication
-            val userUid = result.user?.uid ?: return onResult(false, "User UID not found")
-
-            // Create a user object
-            val user = User(
-                email = email,
-                username = username,
-                profilepicture = "", // empty for now
-            )
-
-            // Save user data in Firestore
-            db.collection("users").document(userUid).set(user).await()
-
-            // Registration successful
-            onResult(true, null)
-        } catch (e: Exception) {
-            onResult(false, e.message) // Handle errors during registration
-        }
-    }
-
-    // Get user data from Firestore
-    suspend fun getUserData(userUid: String): User? {
-        return try {
-            val documentSnapshot = db.collection("users").document(userUid).get().await()
-            documentSnapshot.toObject(User::class.java)
-        } catch (e: Exception) {
-            println("Error fetching user data: ${e.message}")
-            null
-        }
-    }
-
-    // Add a lost item to Firestore
-    suspend fun addItem(title: String, description: String, category: String, imageUrl: String, latitude: Double, longitude: Double, onResult: (Boolean, String?) -> Unit) {
+    // Add a lost item to Firestore (this is now a suspend function)
+    suspend fun addItem(
+        title: String,
+        description: String,
+        category: String,
+        imageUrl: String,
+        latitude: Double,
+        longitude: Double
+    ) {
         val auth = FirebaseAuth.getInstance()
 
         // Check if user is authenticated
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            onResult(false, "User not authenticated")
-            return
+            throw Exception("User not authenticated")
         }
 
         // Create new Item object
@@ -76,9 +44,8 @@ class DatabaseHelper {
         try {
             // Save the new item in Firestore under 'items' collection
             db.collection("items").add(newItem).await()
-            onResult(true, null) // Successfully added the item
         } catch (e: Exception) {
-            onResult(false, e.message) // Handle errors
+            throw Exception("Failed to add item: ${e.message}")
         }
     }
 

@@ -15,17 +15,19 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
-import com.example.lostandfoundapp.viewmodel.ItemViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.google.maps.android.compose.Marker
 
 @Composable
-fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
+fun MapScreen(navController: NavController) {
+    val databaseHelper = DatabaseHelper()
+
     val context = LocalContext.current
-    val items by itemViewModel.items.observeAsState(listOf()) // Observe LiveData for items
+    var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     val locationPermissionGranted = remember { mutableStateOf(false) }
 
     // Permission launcher
@@ -43,9 +45,9 @@ fun MapScreen(navController: NavController, itemViewModel: ItemViewModel) {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Fetch items from the ViewModel
+    // Fetch items from the database
     LaunchedEffect(Unit) {
-        itemViewModel.getItems()
+        items = databaseHelper.getItems()
     }
 
     Scaffold(
@@ -113,7 +115,6 @@ fun GoogleMapView(items: List<Item>) {
                     title = item.title,
                     snippet = item.description,
                     onClick = {
-                        Log.d("GoogleMapView", "Marker clicked: ${item.title}, ${item.description}, ${item.imageUrl}") // Debugging
                         selectedItem = item // Set selected item when marker is clicked
                         true // Consume the event
                     }
@@ -127,6 +128,7 @@ fun GoogleMapView(items: List<Item>) {
         ImageDialog(item = item, onDismiss = { selectedItem = null })
     }
 }
+
 
 @Composable
 fun ImageDialog(item: Item, onDismiss: () -> Unit) {
