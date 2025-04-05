@@ -12,7 +12,7 @@ class DatabaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Add a lost item to Firestore (this is now a suspend function)
+    // Add a lost item to Firestore
     suspend fun addItem(
         title: String,
         description: String,
@@ -37,8 +37,10 @@ class DatabaseHelper {
             imageUrl = imageUrl,
             location = GeoPoint(latitude, longitude), // GeoPoint for latitude/longitude
             reportedBy = currentUser.uid, // Save user UID as the reporter
+            foundBy = null,  // Initially null since the item is lost
             registeredAt = Timestamp.now(),
-            lost = true
+            foundAt = null,  // Not set yet as the item is still lost
+            lost = true // The item is lost when first reported
         )
 
         try {
@@ -59,6 +61,23 @@ class DatabaseHelper {
         } catch (e: Exception) {
             println("Error fetching items: ${e.message}")
             emptyList() // Return an empty list in case of error
+        }
+    }
+
+    // Mark an item as found
+    suspend fun markItemAsFound(itemId: String, foundByUserId: String) {
+        try {
+            // Reference to the item document in Firestore
+            val itemRef = db.collection("items").document(itemId)
+
+            // Update the item with the new values
+            itemRef.update(
+                "lost", false,  // Mark item as found
+                "foundAt", Timestamp.now(),  // Set the found time
+                "foundBy", foundByUserId  // Set the user who found the item
+            ).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to mark item as found: ${e.message}")
         }
     }
 }

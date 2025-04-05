@@ -2,6 +2,7 @@ package com.example.lostandfoundapp.userInterface
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.lostandfoundapp.database.DatabaseHelper
@@ -28,10 +30,6 @@ fun ReportItemScreen(navController: NavHostController) {
     val latitude = remember { mutableStateOf("") }
     val longitude = remember { mutableStateOf("") }
 
-    // For success and error messages
-    val message = remember { mutableStateOf("") }
-    val messageColor = remember { mutableStateOf(Color.Red) }
-
     // For selecting images using ActivityResultContracts
     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         // This is where the selected image URI will be returned
@@ -39,6 +37,7 @@ fun ReportItemScreen(navController: NavHostController) {
     }
 
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current // Access the context for showing Toast messages
     val databaseHelper = DatabaseHelper()
 
     Column(
@@ -147,32 +146,22 @@ fun ReportItemScreen(navController: NavHostController) {
                                         latitude = latitude.value.toDouble(),
                                         longitude = longitude.value.toDouble()
                                     )
-                                    message.value = "Item added successfully!"
-                                    messageColor.value = Color.Green
+                                    Toast.makeText(context, "Item added successfully!", Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
-                                    message.value = "Failed to add item: ${e.message}"
-                                    messageColor.value = Color.Red
+                                    Toast.makeText(context, "Failed to add item: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                     }
                     .addOnFailureListener { e ->
-                        message.value = "Failed to upload image: ${e.message}"
-                        messageColor.value = Color.Red
+                        Toast.makeText(context, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
 
             } else {
-                message.value = "Please fill in all required fields."
-                messageColor.value = Color.Red
+                Toast.makeText(context, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
             }
         }) {
             Text("Report Item")
-        }
-
-        // Display feedback message
-        if (message.value.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = message.value, color = messageColor.value)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
