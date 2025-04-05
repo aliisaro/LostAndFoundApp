@@ -1,13 +1,16 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -18,11 +21,15 @@ fun RegisterScreen(navController: NavController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally)
+    {
         Spacer(modifier = Modifier.height(20.dp))
 
         // Using default Text style
-        Text(text = "Register Screen")
+        Text(text = "Register", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -54,7 +61,7 @@ fun RegisterScreen(navController: NavController) {
                 val passwordStr = password.value
 
                 if (emailStr.isEmpty() || passwordStr.isEmpty()) {
-                    // Skip error message here, as we want no errors other than registration failure
+                    Toast.makeText(navController.context, "Registration failed: Email and password cannot be empty", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
 
@@ -74,12 +81,18 @@ fun RegisterScreen(navController: NavController) {
             Text("Register")
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
 
         // Navigate to LoginScreen
-        Button(onClick = { navController.navigate("login") }) {
-            Text("Go to Login page")
-        }
+        Text(
+            text = "Login instead",
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable {
+                    navController.navigate("login")
+                }
+        )
     }
 }
 
