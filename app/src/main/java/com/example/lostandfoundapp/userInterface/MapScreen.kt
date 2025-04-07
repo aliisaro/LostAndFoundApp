@@ -2,6 +2,8 @@ package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -10,7 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -30,7 +34,6 @@ fun MapScreen(navController: NavController) {
 
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     val locationPermissionGranted = remember { mutableStateOf(false) }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -40,21 +43,17 @@ fun MapScreen(navController: NavController) {
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
-    // Check location permission
+    // Check location permission and load items
     LaunchedEffect(Unit) {
         locationPermissionGranted.value = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-    }
 
-    // Load items initially
-    LaunchedEffect(Unit) {
         items = databaseHelper.getLostItems()
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -89,7 +88,7 @@ fun MapScreen(navController: NavController) {
                     onItemFound = {
                         CoroutineScope(Dispatchers.Main).launch {
                             items = databaseHelper.getLostItems()
-                            snackbarHostState.showSnackbar("Item marked as found!")
+                            Toast.makeText(context, "Item marked as found!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -158,21 +157,55 @@ fun ItemDetails(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = item.title) },
+        title = { Text(text = item.title)},
         text = {
             Column {
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = "Item Image",
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Category:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(text = item.category)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Description:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(text = item.description)
-                Spacer(modifier = Modifier.height(8.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Location:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(text = item.location.toString())
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Reported At:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(text = item.registeredAt.toDate().toString())
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "Mark as Found", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("I am the owner and I found this item")
                 }
             }
         },
@@ -184,7 +217,7 @@ fun ItemDetails(
                     }
                     onDismiss()
                 }) {
-                    Text("Mark as Found")
+                    Text("I am the owner and I found this item")
                 }
             }
         },

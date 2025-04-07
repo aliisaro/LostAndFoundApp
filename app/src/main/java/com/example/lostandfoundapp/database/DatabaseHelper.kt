@@ -70,7 +70,6 @@ class DatabaseHelper {
         }
     }
 
-
     // Mark an item as found
     suspend fun markItemAsFound(itemId: String, foundByUserId: String) {
         try {
