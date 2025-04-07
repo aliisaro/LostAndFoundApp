@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +36,7 @@ fun ReportItemScreen(navController: NavHostController) {
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val latitude = remember { mutableStateOf("") }
     val longitude = remember { mutableStateOf("") }
+    val checked = remember { mutableStateOf(false) }
 
     // For selecting images using ActivityResultContracts
     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -93,7 +96,8 @@ fun ReportItemScreen(navController: NavHostController) {
                                     category = category.value, // Pass the category here
                                     imageUrl = imageUrl, // Pass the image URL here
                                     latitude = latitude.value.toDouble(),
-                                    longitude = longitude.value.toDouble()
+                                    longitude = longitude.value.toDouble(),
+                                    showContactEmail = checked.value
                                 )
                                 // Show success Toast
                                 Toast.makeText(context, "Item added successfully!", Toast.LENGTH_SHORT).show()
@@ -189,11 +193,16 @@ fun ReportItemScreen(navController: NavHostController) {
                 Text(text = "Select Image")
             }
 
-            // Display selected image (if any)
+            // Display selected image
             if (imageUri.value != null) {
-                Text(text = "             Image selected")
+                Text(text = "  Image selected")
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Image selected",
+                    tint = Color(0xFF4CAF50) // Green checkmark
+                )
             } else {
-                Text(text = "           No image selected")
+                Text(text = "  No image selected", color = Color.Gray)
             }
         }
 
@@ -223,7 +232,17 @@ fun ReportItemScreen(navController: NavHostController) {
             fontSize = 13.sp,
             color = Color.Gray)
 
-        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+        ) {
+            Text(text = "I want to show my email address.")
+            Spacer(modifier = Modifier.width(8.dp))
+            Checkbox(
+                checked = checked.value,
+                onCheckedChange = { checked.value = it }
+            )
+        }
 
         // Button to add the item
         Button(onClick = { reportItemButtonAction()

@@ -19,8 +19,10 @@ class DatabaseHelper {
         category: String,
         imageUrl: String,
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        showContactEmail: Boolean
     ) {
+
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -43,7 +45,9 @@ class DatabaseHelper {
                 foundBy = null,
                 registeredAt = Timestamp.now(),
                 foundAt = null,
-                lost = true
+                lost = true,
+                contactEmail = currentUser.email.toString(), // Always store this
+                showContactEmail = showContactEmail // Only show if true
             )
 
             // Set the document using the newItem with ID included
@@ -86,6 +90,9 @@ class DatabaseHelper {
             throw Exception("Failed to mark item as found: ${e.message}")
         }
     }
+
+
+
 }
 
 

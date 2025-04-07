@@ -14,5 +14,7 @@ data class Item(
     val foundBy: String? = null, // ID of the user who found it/ is the owner
     val registeredAt: Timestamp = Timestamp.now(), // Time when item was reported
     val foundAt: Timestamp? = null, // Time when item was found
-    val lost: Boolean = true // True if item is still lost, false if found
+    val lost: Boolean = true, // True if item is still lost, false if found
+    val contactEmail: String = "",
+    val showContactEmail: Boolean = false,
 )

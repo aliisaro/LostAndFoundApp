@@ -167,7 +167,7 @@ fun ItemDetails(
                         .fillMaxWidth()
                         .height(200.dp)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Category:",
@@ -176,7 +176,7 @@ fun ItemDetails(
                 )
                 Text(text = item.category)
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Description:",
@@ -185,7 +185,7 @@ fun ItemDetails(
                 )
                 Text(text = item.description)
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Location:",
@@ -194,7 +194,7 @@ fun ItemDetails(
                 )
                 Text(text = item.location.toString())
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Reported At:",
@@ -202,6 +202,19 @@ fun ItemDetails(
                     fontSize = 16.sp
                 )
                 Text(text = item.registeredAt.toDate().toString())
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                if (item.showContactEmail) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Contact Email: ",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Text(text = item.contactEmail)
+                    }
+                }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = "Mark as Found", fontWeight = FontWeight.Bold, fontSize = 16.sp)
