@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun ReportItemScreen(navController: NavHostController) {
@@ -32,7 +32,6 @@ fun ReportItemScreen(navController: NavHostController) {
 
     // For selecting images using ActivityResultContracts
     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        // This is where the selected image URI will be returned
         imageUri.value = uri
     }
 
@@ -136,7 +135,7 @@ fun ReportItemScreen(navController: NavHostController) {
                             val imageUrl = uri.toString()
 
                             // Now add the item to Firestore with the image URL
-                            coroutineScope.launch {
+                            coroutineScope.launch(Dispatchers.Main) {
                                 try {
                                     databaseHelper.addItem(
                                         title = title.value,
@@ -146,18 +145,23 @@ fun ReportItemScreen(navController: NavHostController) {
                                         latitude = latitude.value.toDouble(),
                                         longitude = longitude.value.toDouble()
                                     )
+                                    // Show success Toast
                                     Toast.makeText(context, "Item added successfully!", Toast.LENGTH_SHORT).show()
                                 } catch (e: Exception) {
+                                    // Show error Toast
                                     Toast.makeText(context, "Failed to add item: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    Log.e("ReportItemScreen", "Error adding item: ${e.message}")
                                 }
                             }
                         }
                     }
                     .addOnFailureListener { e ->
+                        // Show error Toast if image upload fails
                         Toast.makeText(context, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
 
             } else {
+                // Show error Toast if form fields are missing
                 Toast.makeText(context, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
             }
         }) {
@@ -171,3 +175,4 @@ fun ReportItemScreen(navController: NavHostController) {
         }
     }
 }
+

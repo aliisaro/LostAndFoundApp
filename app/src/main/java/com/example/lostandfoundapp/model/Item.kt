@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 
 data class Item(
+    val id: String = "",
     val title: String = "",
     val description: String = "",
     val category: String = "",

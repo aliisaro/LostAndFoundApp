@@ -22,47 +22,54 @@ class DatabaseHelper {
         longitude: Double
     ) {
         val auth = FirebaseAuth.getInstance()
-
-        // Check if user is authenticated
         val currentUser = auth.currentUser
         if (currentUser == null) {
             throw Exception("User not authenticated")
         }
 
-        // Create new Item object
-        val newItem = Item(
-            title = title,
-            description = description,
-            category = category,
-            imageUrl = imageUrl,
-            location = GeoPoint(latitude, longitude), // GeoPoint for latitude/longitude
-            reportedBy = currentUser.uid, // Save user UID as the reporter
-            foundBy = null,  // Initially null since the item is lost
-            registeredAt = Timestamp.now(),
-            foundAt = null,  // Not set yet as the item is still lost
-            lost = true // The item is lost when first reported
-        )
-
         try {
-            // Save the new item in Firestore under 'items' collection
-            db.collection("items").add(newItem).await()
+            // Create a new document reference to get the generated ID
+            val newDocRef = db.collection("items").document()
+
+            // Create the Item with the ID included
+            val newItem = Item(
+                id = newDocRef.id,  // Assign the generated document ID
+                title = title,
+                description = description,
+                category = category,
+                imageUrl = imageUrl,
+                location = GeoPoint(latitude, longitude),
+                reportedBy = currentUser.uid,
+                foundBy = null,
+                registeredAt = Timestamp.now(),
+                foundAt = null,
+                lost = true
+            )
+
+            // Set the document using the newItem with ID included
+            newDocRef.set(newItem).await()
         } catch (e: Exception) {
             throw Exception("Failed to add item: ${e.message}")
         }
     }
 
-    // Get all lost items from Firestore
-    suspend fun getItems(): List<Item> {
+    // Get only lost items from Firestore
+    suspend fun getLostItems(): List<Item> {
         return try {
-            // Fetch all documents from the 'items' collection
-            val querySnapshot = db.collection("items").get().await()
+            // Fetch documents where 'lost' == true
+            val querySnapshot = db.collection("items")
+                .whereEqualTo("lost", true) // Only get lost items
+                .get()
+                .await()
+
             // Convert Firestore documents to a list of Item objects
             querySnapshot.documents.mapNotNull { it.toObject(Item::class.java) }
         } catch (e: Exception) {
             println("Error fetching items: ${e.message}")
-            emptyList() // Return an empty list in case of error
+            emptyList()
         }
     }
+
 
     // Mark an item as found
     suspend fun markItemAsFound(itemId: String, foundByUserId: String) {

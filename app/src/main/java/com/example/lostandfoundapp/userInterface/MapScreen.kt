@@ -2,13 +2,12 @@ package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -20,38 +19,42 @@ import com.example.lostandfoundapp.model.Item
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
-import com.google.maps.android.compose.Marker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun MapScreen(navController: NavController) {
+    val context = LocalContext.current
     val databaseHelper = DatabaseHelper()
 
-    val context = LocalContext.current
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     val locationPermissionGranted = remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        locationPermissionGranted.value = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        locationPermissionGranted.value =
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
-    // Check and request permissions
+    // Check location permission
     LaunchedEffect(Unit) {
         locationPermissionGranted.value = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Fetch items from the database
+    // Load items initially
     LaunchedEffect(Unit) {
-        items = databaseHelper.getItems()
+        items = databaseHelper.getLostItems()
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -59,13 +62,15 @@ fun MapScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(text = "Map Screen")
+            Text("Map Screen", style = MaterialTheme.typography.headlineSmall)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = { navController.popBackStack() }) {
                 Text("Go Back")
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (!locationPermissionGranted.value) {
                 Button(onClick = {
@@ -79,16 +84,26 @@ fun MapScreen(navController: NavController) {
                     Text("Enable Location")
                 }
             } else {
-                // Show map when permission is granted
-                GoogleMapView(items = items)
+                GoogleMapView(
+                    items = items,
+                    onItemFound = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            items = databaseHelper.getLostItems()
+                            snackbarHostState.showSnackbar("Item marked as found!")
+                        }
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun GoogleMapView(items: List<Item>) {
-    val defaultLocation = LatLng(60.16952000, 24.93545000) // Default to Helsinki
+fun GoogleMapView(
+    items: List<Item>,
+    onItemFound: () -> Unit
+) {
+    val defaultLocation = LatLng(60.16952, 24.93545) // Helsinki
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
     }
@@ -98,15 +113,8 @@ fun GoogleMapView(items: List<Item>) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
-        properties = MapProperties(
-            isMyLocationEnabled = true // Always enable user location if permission is granted
-        ),
-        uiSettings = MapUiSettings(
-            zoomControlsEnabled = true,
-            scrollGesturesEnabled = true,
-            zoomGesturesEnabled = true,
-            tiltGesturesEnabled = true
-        )
+        properties = MapProperties(isMyLocationEnabled = true),
+        uiSettings = MapUiSettings(zoomControlsEnabled = true)
     ) {
         items.forEach { item ->
             item.location?.let { location ->
@@ -115,26 +123,42 @@ fun GoogleMapView(items: List<Item>) {
                     title = item.title,
                     snippet = item.description,
                     onClick = {
-                        selectedItem = item // Set selected item when marker is clicked
-                        true // Consume the event
+                        selectedItem = item
+                        true
                     }
                 )
             }
         }
     }
 
-    // Show item image and description in a dialog when a marker is clicked
     selectedItem?.let { item ->
-        ImageDialog(item = item, onDismiss = { selectedItem = null })
+        ItemDetails(
+            item = item,
+            onDismiss = { selectedItem = null },
+            onConfirmFound = { foundItem ->
+                val dbHelper = DatabaseHelper()
+                CoroutineScope(Dispatchers.Main).launch {
+                    dbHelper.markItemAsFound(foundItem.id, foundItem.reportedBy)
+                    selectedItem = null
+                    onItemFound()
+                }
+            }
+        )
     }
 }
 
-
 @Composable
-fun ImageDialog(item: Item, onDismiss: () -> Unit) {
+fun ItemDetails(
+    item: Item,
+    onDismiss: () -> Unit,
+    onConfirmFound: (Item) -> Unit
+) {
+    var checked by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = item.title ?: "No Title") },
+        title = { Text(text = item.title) },
         text = {
             Column {
                 AsyncImage(
@@ -143,10 +167,28 @@ fun ImageDialog(item: Item, onDismiss: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = item.description ?: "No Description")
+                Text(text = item.description)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = checked, onCheckedChange = { checked = it })
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("I am the owner and I found this item")
+                }
             }
         },
         confirmButton = {
+            if (checked) {
+                Button(onClick = {
+                    coroutineScope.launch {
+                        onConfirmFound(item)
+                    }
+                    onDismiss()
+                }) {
+                    Text("Mark as Found")
+                }
+            }
+        },
+        dismissButton = {
             Button(onClick = onDismiss) {
                 Text("Close")
             }
