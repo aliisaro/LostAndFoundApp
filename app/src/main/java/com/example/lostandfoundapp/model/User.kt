@@ -2,6 +2,9 @@ package com.example.lostandfoundapp.model
 
 data class User(
     val email: String = "",
-    val username: String = "",
-    val profilepicture: String = "",
+    //profile pic?
+    //username?
 )
+
+//jos halutaan että käyttäjällä voi olla username ja pfp niin pitää tehä funktio,
+// joka lisää käyttäjätiedot tietokantaan "users" tauluun

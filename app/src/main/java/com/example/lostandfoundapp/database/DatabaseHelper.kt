@@ -12,88 +12,87 @@ class DatabaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Register user and save additional data in Firestore
-    suspend fun registerUser(email: String, password: String, username: String, onResult: (Boolean, String?) -> Unit) {
-        val auth = FirebaseAuth.getInstance()
-        try {
-            // Create user in Firebase Authentication
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-
-            // Get user UID from Firebase Authentication
-            val userUid = result.user?.uid ?: return onResult(false, "User UID not found")
-
-            // Create a user object
-            val user = User(
-                email = email,
-                username = username,
-                profilepicture = "", // empty for now
-            )
-
-            // Save user data in Firestore
-            db.collection("users").document(userUid).set(user).await()
-
-            // Registration successful
-            onResult(true, null)
-        } catch (e: Exception) {
-            onResult(false, e.message) // Handle errors during registration
-        }
-    }
-
-    // Get user data from Firestore
-    suspend fun getUserData(userUid: String): User? {
-        return try {
-            val documentSnapshot = db.collection("users").document(userUid).get().await()
-            documentSnapshot.toObject(User::class.java)
-        } catch (e: Exception) {
-            println("Error fetching user data: ${e.message}")
-            null
-        }
-    }
-
     // Add a lost item to Firestore
-    suspend fun addItem(title: String, description: String, category: String, imageUrl: String, latitude: Double, longitude: Double, onResult: (Boolean, String?) -> Unit) {
-        val auth = FirebaseAuth.getInstance()
+    suspend fun addItem(
+        title: String,
+        description: String,
+        category: String,
+        imageUrl: String,
+        latitude: Double,
+        longitude: Double,
+        showContactEmail: Boolean
+    ) {
 
-        // Check if user is authenticated
+        val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            onResult(false, "User not authenticated")
-            return
+            throw Exception("User not authenticated")
         }
 
-        // Create new Item object
-        val newItem = Item(
-            title = title,
-            description = description,
-            category = category,
-            imageUrl = imageUrl,
-            location = GeoPoint(latitude, longitude), // GeoPoint for latitude/longitude
-            reportedBy = currentUser.uid, // Save user UID as the reporter
-            registeredAt = Timestamp.now(),
-            lost = true
-        )
-
         try {
-            // Save the new item in Firestore under 'items' collection
-            db.collection("items").add(newItem).await()
-            onResult(true, null) // Successfully added the item
+            // Create a new document reference to get the generated ID
+            val newDocRef = db.collection("items").document()
+
+            // Create the Item with the ID included
+            val newItem = Item(
+                id = newDocRef.id,  // Assign the generated document ID
+                title = title,
+                description = description,
+                category = category,
+                imageUrl = imageUrl,
+                location = GeoPoint(latitude, longitude),
+                reportedBy = currentUser.uid,
+                foundBy = null,
+                registeredAt = Timestamp.now(),
+                foundAt = null,
+                lost = true,
+                contactEmail = currentUser.email.toString(), // Always store this
+                showContactEmail = showContactEmail // Only show if true
+            )
+
+            // Set the document using the newItem with ID included
+            newDocRef.set(newItem).await()
         } catch (e: Exception) {
-            onResult(false, e.message) // Handle errors
+            throw Exception("Failed to add item: ${e.message}")
         }
     }
 
-    // Get all lost items from Firestore
-    suspend fun getItems(): List<Item> {
+    // Get only lost items from Firestore
+    suspend fun getLostItems(): List<Item> {
         return try {
-            // Fetch all documents from the 'items' collection
-            val querySnapshot = db.collection("items").get().await()
+            // Fetch documents where 'lost' == true
+            val querySnapshot = db.collection("items")
+                .whereEqualTo("lost", true) // Only get lost items
+                .get()
+                .await()
+
             // Convert Firestore documents to a list of Item objects
             querySnapshot.documents.mapNotNull { it.toObject(Item::class.java) }
         } catch (e: Exception) {
             println("Error fetching items: ${e.message}")
-            emptyList() // Return an empty list in case of error
+            emptyList()
         }
     }
+
+    // Mark an item as found
+    suspend fun markItemAsFound(itemId: String, foundByUserId: String) {
+        try {
+            // Reference to the item document in Firestore
+            val itemRef = db.collection("items").document(itemId)
+
+            // Update the item with the new values
+            itemRef.update(
+                "lost", false,  // Mark item as found
+                "foundAt", Timestamp.now(),  // Set the found time
+                "foundBy", foundByUserId  // Set the user who found the item
+            ).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to mark item as found: ${e.message}")
+        }
+    }
+
+
+
 }
 
 
