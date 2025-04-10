@@ -1,11 +1,12 @@
 package com.example.lostandfoundapp.userInterface
 
-import ReportItemScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.example.lostandfoundapp.userInterface.ReportItemScreen
+
 
 @Composable
 fun Navigation() {
@@ -34,6 +35,9 @@ fun Navigation() {
         }
         composable("camera") {
             CameraScreen(navController)
+        }
+        composable("profile") {
+            ProfileScreen(navController)
         }
     }
 }
