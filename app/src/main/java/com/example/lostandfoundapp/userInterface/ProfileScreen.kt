@@ -97,6 +97,13 @@ fun ProfileScreen(navController: NavController) {
         ) {
             Text("Log out", color = MaterialTheme.colorScheme.onError)
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Go back to homepage button
+        Button(onClick = { navController.navigate("home") }, modifier = Modifier.fillMaxWidth()) {
+            Text("Go back to home page")
+        }
     }
 }
 
