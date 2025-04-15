@@ -43,6 +43,10 @@ fun MapScreen(navController: NavController) {
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
+    // State for coordinates input
+    var geoPointInput by remember { mutableStateOf("") }
+    var enteredLocation by remember { mutableStateOf<LatLng?>(null) }
+
     // Check location permission and load items
     LaunchedEffect(Unit) {
         locationPermissionGranted.value = ContextCompat.checkSelfPermission(
@@ -65,12 +69,50 @@ fun MapScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = {  navController.navigate("home")}) {
+            Button(onClick = { navController.navigate("home")}) {
                 Text("Go Back")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Input field for GeoPoint string
+            OutlinedTextField(
+                value = geoPointInput,
+                onValueChange = { geoPointInput = it },
+                label = { Text("Paste GeoPoint") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Button to parse and update map with pasted location
+            Button(
+                onClick = {
+                    val regex = """GeoPoint\s*\{\s*latitude=(-?\d+\.\d+),\s*longitude=(-?\d+\.\d+)\s*\}""".toRegex()
+                    val matchResult = regex.find(geoPointInput)
+
+                    if (matchResult != null) {
+                        val latitude = matchResult.groupValues[1].toDoubleOrNull()
+                        val longitude = matchResult.groupValues[2].toDoubleOrNull()
+
+                        if (latitude != null && longitude != null) {
+                            enteredLocation = LatLng(latitude, longitude)
+                            // Reset input field after successful parsing
+                            geoPointInput = ""
+                        } else {
+                            Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(context, "Invalid GeoPoint format", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Go to Location")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Check and handle location permission
             if (!locationPermissionGranted.value) {
                 Button(onClick = {
                     permissionLauncher.launch(
@@ -85,6 +127,7 @@ fun MapScreen(navController: NavController) {
             } else {
                 GoogleMapView(
                     items = items,
+                    enteredLocation = enteredLocation, // Pass entered location to the map
                     onItemFound = {
                         CoroutineScope(Dispatchers.Main).launch {
                             val updatedItems = databaseHelper.getLostItems()
@@ -101,11 +144,19 @@ fun MapScreen(navController: NavController) {
 @Composable
 fun GoogleMapView(
     items: List<Item>,
+    enteredLocation: LatLng?,
     onItemFound: () -> Unit
 ) {
     val defaultLocation = LatLng(60.16952, 24.93545) // Helsinki
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
+    }
+
+    // If entered location is not null, center the map on that location
+    LaunchedEffect(enteredLocation) {
+        enteredLocation?.let { latLng ->
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, 15f)
+        }
     }
 
     var selectedItem by remember { mutableStateOf<Item?>(null) }
@@ -117,9 +168,10 @@ fun GoogleMapView(
         uiSettings = MapUiSettings(zoomControlsEnabled = true)
     ) {
         items.forEach { item ->
-            item.location?.let { location ->
+            item.location?.let { geoPoint ->
+                val latLng = LatLng(geoPoint.latitude, geoPoint.longitude) // Convert GeoPoint to LatLng
                 Marker(
-                    state = rememberMarkerState(position = LatLng(location.latitude, location.longitude)),
+                    state = rememberMarkerState(position = latLng),
                     title = item.title,
                     snippet = item.description,
                     onClick = {

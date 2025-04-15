@@ -1,5 +1,6 @@
 package com.example.lostandfoundapp.userInterface
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.runtime.Composable
@@ -12,7 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -134,7 +137,7 @@ fun SearchItemScreen(navController: NavController) {
         }
 
         selectedItem?.let { item ->
-            ItemPreviewDialog(item = item, onDismiss = { selectedItem = null })
+            ItemDetails(item = item, onDismiss = { selectedItem = null })
         }
     }
 }
@@ -170,11 +173,13 @@ fun ItemCard(item: Item, onClick: () -> Unit) {
 }
 
 @Composable
-fun ItemPreviewDialog(
+fun ItemDetails(
     item: Item,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val locationText = item.location.toString()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -224,11 +229,28 @@ fun ItemPreviewDialog(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Location:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(text = item.location.toString())
 
+                Spacer(modifier = Modifier.height(10.dp))
 
+                // Add copy button for location
+                Button(
+                    onClick = {
+                        clipboardManager.setText(AnnotatedString(locationText))
+                        Toast.makeText(context, "Location copied to clipboard", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.padding(top = 10.dp)
+                ) {
+                    Text("Copy Location")
+                }
             }
         },
         confirmButton = {
