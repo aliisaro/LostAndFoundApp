@@ -65,7 +65,7 @@ fun MapScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = { navController.popBackStack() }) {
+            Button(onClick = {  navController.navigate("home")}) {
                 Text("Go Back")
             }
 
@@ -87,7 +87,8 @@ fun MapScreen(navController: NavController) {
                     items = items,
                     onItemFound = {
                         CoroutineScope(Dispatchers.Main).launch {
-                            items = databaseHelper.getLostItems()
+                            val updatedItems = databaseHelper.getLostItems()
+                            items = updatedItems
                             Toast.makeText(context, "Item marked as found!", Toast.LENGTH_SHORT).show()
                         }
                     }

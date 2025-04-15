@@ -5,8 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.example.lostandfoundapp.userInterface.ReportItemScreen
-
 
 @Composable
 fun Navigation() {
@@ -38,6 +36,9 @@ fun Navigation() {
         }
         composable("profile") {
             ProfileScreen(navController)
+        }
+        composable("searchItem") {
+            SearchItemScreen(navController)
         }
     }
 }

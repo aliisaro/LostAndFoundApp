@@ -48,6 +48,15 @@ fun HomeScreen(navController: NavController) {
             Text("Report item", color = MaterialTheme.colorScheme.onSecondary)
         }
 
+        // Go to search screen
+        Button(
+            onClick = { navController.navigate("searchItem") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+        ) {
+            Text("Search for items", color = MaterialTheme.colorScheme.onSecondary)
+        }
+
         // Go to take a picture with the camera
         Button(
             onClick = { navController.navigate("camera") },
