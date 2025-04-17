@@ -90,6 +90,7 @@ class DatabaseHelper {
             throw Exception("Failed to mark item as found: ${e.message}")
         }
     }
+    //Updates an item
     suspend fun updateItem(
         itemId: String,
         title: String,
@@ -129,6 +130,28 @@ class DatabaseHelper {
         } catch (e: Exception) {
             throw Exception("Failed to update item: ${e.message}")
         }
+    }
+    suspend fun getItemById(itemId: String): Item? {
+        val doc = db.collection("items").document(itemId).get().await()
+        return if (doc.exists()) {
+            val data = doc.data
+            val location = doc.getGeoPoint("location")
+            Item(
+                id = doc.id,
+                title = doc.getString("title") ?: "",
+                description = doc.getString("description") ?: "",
+                category = doc.getString("category") ?: "",
+                imageUrl = doc.getString("imageUrl") ?: "",
+                location = location, // keep nullable if needed
+                showContactEmail = doc.getBoolean("showContactEmail") ?: false
+            )
+        } else {
+            null
+        }
+    }
+    suspend fun deleteItem(itemId: String) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("items").document(itemId).delete().await()
     }
 }
 
