@@ -71,7 +71,7 @@ fun MapScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text("Map Screen", style = MaterialTheme.typography.headlineSmall)
+            Text("Map Screen", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -153,6 +153,36 @@ class DatabaseHelper {
         val db = FirebaseFirestore.getInstance()
         db.collection("items").document(itemId).delete().await()
     }
+
+
+    // Get statistics about items
+    suspend fun getItemStatistics(): Map<String, Int> {
+        return try {
+            val collection = db.collection("items")
+
+            val totalItems = collection.get().await().size()
+
+            val lostItems = collection
+                .whereEqualTo("lost", true)
+                .get()
+                .await()
+                .size()
+
+            val foundItems = collection
+                .whereEqualTo("lost", false)
+                .get()
+                .await()
+                .size()
+
+            mapOf(
+                "total" to totalItems,
+                "lost" to lostItems,
+                "found" to foundItems
+            )
+        } catch (e: Exception) {
+            throw Exception("Failed to fetch item statistics: ${e.message}")
+        }
+    }
 }
 
 

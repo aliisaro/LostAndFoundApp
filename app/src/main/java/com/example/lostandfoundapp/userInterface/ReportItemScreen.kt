@@ -126,7 +126,7 @@ fun ReportItemScreen(navController: NavHostController) {
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Report Lost Item", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "Report Lost Item", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
 
         Spacer(modifier = Modifier.height(20.dp))
 

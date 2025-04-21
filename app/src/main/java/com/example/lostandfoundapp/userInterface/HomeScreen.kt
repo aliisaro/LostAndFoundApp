@@ -23,7 +23,7 @@ fun HomeScreen(navController: NavController) {
 
         // Tervetuloteksti
         Text(
-            text = "Welcome to Lost & Found App!",
+            text = "Welcome to the Lost & Found App!",
             style = MaterialTheme.typography.headlineMedium, // Käytetään Materiaali-tyylitystä
             color = MaterialTheme.colorScheme.primary
         )
@@ -39,6 +39,15 @@ fun HomeScreen(navController: NavController) {
             Text("Go to Map", color = MaterialTheme.colorScheme.onPrimary)
         }
 
+        // Go to search screen
+        Button(
+            onClick = { navController.navigate("searchItem") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text("Search for items", color = MaterialTheme.colorScheme.onSecondary)
+        }
+
         // Go to report item screen
         Button(
             onClick = { navController.navigate("reportItem") },
@@ -48,13 +57,12 @@ fun HomeScreen(navController: NavController) {
             Text("Report item", color = MaterialTheme.colorScheme.onSecondary)
         }
 
-        // Go to search screen
         Button(
-            onClick = { navController.navigate("searchItem") },
+            onClick = { navController.navigate("searchItemEdit") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text("Search for items", color = MaterialTheme.colorScheme.onSecondary)
+            Text("Edit My Reports", color = MaterialTheme.colorScheme.onSecondary)
         }
 
         // Go to take a picture with the camera
@@ -75,14 +83,14 @@ fun HomeScreen(navController: NavController) {
             Text("Go to Profile", color = MaterialTheme.colorScheme.onTertiary)
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
 
+        // Go to Statistics screen
         Button(
-            onClick = { navController.navigate("searchItemEdit") },
+            onClick = { navController.navigate("statistics") },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
-            Text("Edit My Reports", color = MaterialTheme.colorScheme.onSecondary)
+            Text("Statistics", color = MaterialTheme.colorScheme.onTertiary)
         }
 
 

@@ -40,6 +40,9 @@ fun Navigation() {
         composable("searchItem") {
             SearchItemScreen(navController)
         }
+        composable("statistics") {
+            StatisticsScreen(navController)
+        }
         composable("editReportItem/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
             EditReportItemScreen(navController, itemId)
