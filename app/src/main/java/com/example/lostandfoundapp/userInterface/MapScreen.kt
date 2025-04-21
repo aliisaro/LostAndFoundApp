@@ -2,7 +2,7 @@ package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
+import android.location.Location
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -35,6 +36,9 @@ fun MapScreen(navController: NavController) {
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     val locationPermissionGranted = remember { mutableStateOf(false) }
 
+    var userLocation by remember { mutableStateOf<LatLng?>(null) }
+    var searchGeoPoint by remember { mutableStateOf<String>("") }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -43,22 +47,24 @@ fun MapScreen(navController: NavController) {
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
-    // State for coordinates input
-    var geoPointInput by remember { mutableStateOf("") }
-    var enteredLocation by remember { mutableStateOf<LatLng?>(null) }
-
-    // Check location permission and load items
     LaunchedEffect(Unit) {
         locationPermissionGranted.value = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
+        if (locationPermissionGranted.value) {
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    userLocation = LatLng(location.latitude, location.longitude)
+                }
+            }
+        }
+
         items = databaseHelper.getLostItems()
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { paddingValues ->
+    Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,50 +75,12 @@ fun MapScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = { navController.navigate("home")}) {
+            Button(onClick = { navController.navigate("home") }) {
                 Text("Go Back")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Input field for GeoPoint string
-            OutlinedTextField(
-                value = geoPointInput,
-                onValueChange = { geoPointInput = it },
-                label = { Text("Paste GeoPoint") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Button to parse and update map with pasted location
-            Button(
-                onClick = {
-                    val regex = """GeoPoint\s*\{\s*latitude=(-?\d+\.\d+),\s*longitude=(-?\d+\.\d+)\s*\}""".toRegex()
-                    val matchResult = regex.find(geoPointInput)
-
-                    if (matchResult != null) {
-                        val latitude = matchResult.groupValues[1].toDoubleOrNull()
-                        val longitude = matchResult.groupValues[2].toDoubleOrNull()
-
-                        if (latitude != null && longitude != null) {
-                            enteredLocation = LatLng(latitude, longitude)
-                            // Reset input field after successful parsing
-                            geoPointInput = ""
-                        } else {
-                            Toast.makeText(context, "Invalid coordinates", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(context, "Invalid GeoPoint format", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Go to Location")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Check and handle location permission
             if (!locationPermissionGranted.value) {
                 Button(onClick = {
                     permissionLauncher.launch(
@@ -125,17 +93,44 @@ fun MapScreen(navController: NavController) {
                     Text("Enable Location")
                 }
             } else {
-                GoogleMapView(
-                    items = items,
-                    enteredLocation = enteredLocation, // Pass entered location to the map
-                    onItemFound = {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val updatedItems = databaseHelper.getLostItems()
-                            items = updatedItems
-                            Toast.makeText(context, "Item marked as found!", Toast.LENGTH_SHORT).show()
+                Column {
+                    TextField(
+                        value = searchGeoPoint,
+                        onValueChange = { searchGeoPoint = it },
+                        label = { Text("Paste GeoPoint location") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(onClick = {
+                        // Parse GeoPoint input
+                        val regex = """GeoPoint \{ latitude=([-\d.]+), longitude=([-\d.]+) \}""".toRegex()
+                        val matchResult = regex.find(searchGeoPoint)
+                        if (matchResult != null) {
+                            val latitude = matchResult.groupValues[1].toDouble()
+                            val longitude = matchResult.groupValues[2].toDouble()
+                            userLocation = LatLng(latitude, longitude)
+                            searchGeoPoint = ""
+                        } else {
+                            Toast.makeText(context, "Invalid GeoPoint format", Toast.LENGTH_SHORT).show()
                         }
+                    }) {
+                        Text("Go to Location")
                     }
-                )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    GoogleMapView(
+                        items = items,
+                        userLocation = userLocation,
+                        onItemFound = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                items = databaseHelper.getLostItems()
+                                Toast.makeText(context, "Item marked as found!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
+                }
             }
         }
     }
@@ -144,22 +139,22 @@ fun MapScreen(navController: NavController) {
 @Composable
 fun GoogleMapView(
     items: List<Item>,
-    enteredLocation: LatLng?,
+    userLocation: LatLng?,
     onItemFound: () -> Unit
 ) {
-    val defaultLocation = LatLng(60.16952, 24.93545) // Helsinki
+    val defaultLocation = LatLng(60.16952, 24.93545)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
     }
 
-    // If entered location is not null, center the map on that location
-    LaunchedEffect(enteredLocation) {
-        enteredLocation?.let { latLng ->
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, 15f)
+    var selectedItem by remember { mutableStateOf<Item?>(null) }
+
+    // Update camera position whenever userLocation changes
+    LaunchedEffect(userLocation) {
+        userLocation?.let {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 12f)
         }
     }
-
-    var selectedItem by remember { mutableStateOf<Item?>(null) }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -168,10 +163,9 @@ fun GoogleMapView(
         uiSettings = MapUiSettings(zoomControlsEnabled = true)
     ) {
         items.forEach { item ->
-            item.location?.let { geoPoint ->
-                val latLng = LatLng(geoPoint.latitude, geoPoint.longitude) // Convert GeoPoint to LatLng
+            item.location?.let { location ->
                 Marker(
-                    state = rememberMarkerState(position = latLng),
+                    state = rememberMarkerState(position = LatLng(location.latitude, location.longitude)),
                     title = item.title,
                     snippet = item.description,
                     onClick = {
@@ -186,6 +180,7 @@ fun GoogleMapView(
     selectedItem?.let { item ->
         ItemDetails(
             item = item,
+            userLocation = userLocation,
             onDismiss = { selectedItem = null },
             onConfirmFound = { foundItem ->
                 val dbHelper = DatabaseHelper()
@@ -202,15 +197,30 @@ fun GoogleMapView(
 @Composable
 fun ItemDetails(
     item: Item,
+    userLocation: LatLng?,
     onDismiss: () -> Unit,
     onConfirmFound: (Item) -> Unit
 ) {
     var checked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
+    val distanceInKm = remember(item, userLocation) {
+        item.location?.let { itemLoc ->
+            userLocation?.let { userLoc ->
+                val result = calculateDistance(
+                    userLoc.latitude,
+                    userLoc.longitude,
+                    itemLoc.latitude,
+                    itemLoc.longitude
+                )
+                String.format("%.2f km", result)
+            }
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = item.title)},
+        title = { Text(text = item.title) },
         text = {
             Column {
                 AsyncImage(
@@ -222,55 +232,41 @@ fun ItemDetails(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Category:",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Text(text = item.category)
+                Text("Category:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(item.category)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Description:",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Text(text = item.description)
+                Text("Description:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(item.description)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Location:",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Text(text = item.location.toString())
+                Text("Location:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(item.location.toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Reported At:",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Text(text = item.registeredAt.toDate().toString())
+                Text("Reported At:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
+
+                if (distanceInKm != null) {
+                    Text("Distance to item:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(distanceInKm)
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
 
                 if (item.showContactEmail) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Contact Email: ",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                        Text(text = item.contactEmail)
+                        Text("Contact Email: ", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(item.contactEmail)
                     }
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Mark as Found", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("Mark as Found", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
                 }
             }
@@ -293,4 +289,21 @@ fun ItemDetails(
             }
         }
     )
+}
+
+fun calculateDistance(
+    startLat: Double,
+    startLng: Double,
+    endLat: Double,
+    endLng: Double
+): Float {
+    val startLocation = Location("").apply {
+        latitude = startLat
+        longitude = startLng
+    }
+    val endLocation = Location("").apply {
+        latitude = endLat
+        longitude = endLng
+    }
+    return startLocation.distanceTo(endLocation) / 1000f
 }
