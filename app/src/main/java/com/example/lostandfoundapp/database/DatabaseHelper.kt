@@ -90,9 +90,69 @@ class DatabaseHelper {
             throw Exception("Failed to mark item as found: ${e.message}")
         }
     }
+    //Updates an item
+    suspend fun updateItem(
+        itemId: String,
+        title: String,
+        description: String,
+        category: String,
+        imageUrl: String,
+        latitude: Double,
+        longitude: Double,
+        showContactEmail: Boolean
+    ) {
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            throw Exception("User not authenticated")
+        }
 
+        try {
+            val itemRef = db.collection("items").document(itemId)
 
+            // Verify that the item belongs to the user
+            val snapshot = itemRef.get().await()
+            val item = snapshot.toObject(Item::class.java)
 
+            if (item == null || item.reportedBy != currentUser.uid) {
+                throw Exception("You can only edit your own reports.")
+            }
+
+            // Perform the update
+            itemRef.update(
+                "title", title,
+                "description", description,
+                "category", category,
+                "imageUrl", imageUrl,
+                "location", GeoPoint(latitude, longitude),
+                "showContactEmail", showContactEmail
+            ).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to update item: ${e.message}")
+        }
+    }
+    suspend fun getItemById(itemId: String): Item? {
+        val doc = db.collection("items").document(itemId).get().await()
+        return if (doc.exists()) {
+            val data = doc.data
+            val location = doc.getGeoPoint("location")
+            Item(
+                id = doc.id,
+                title = doc.getString("title") ?: "",
+                description = doc.getString("description") ?: "",
+                category = doc.getString("category") ?: "",
+                imageUrl = doc.getString("imageUrl") ?: "",
+                location = location, // keep nullable if needed
+                showContactEmail = doc.getBoolean("showContactEmail") ?: false
+            )
+        } else {
+            null
+        }
+    }
+    suspend fun deleteItem(itemId: String) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("items").document(itemId).delete().await()
+    }
 }
 
 

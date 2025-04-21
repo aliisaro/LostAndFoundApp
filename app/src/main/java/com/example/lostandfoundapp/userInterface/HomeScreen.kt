@@ -77,6 +77,15 @@ fun HomeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        Button(
+            onClick = { navController.navigate("searchItemEdit") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+        ) {
+            Text("Edit My Reports", color = MaterialTheme.colorScheme.onSecondary)
+        }
+
+
         // Kirjaudu ulos -painike
         Button(
             onClick = {
