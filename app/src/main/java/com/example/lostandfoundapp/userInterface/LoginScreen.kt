@@ -9,10 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lostandfoundapp.R
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -22,13 +24,15 @@ fun LoginScreen(navController: NavController) {
     val password = remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Login", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.login), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -36,7 +40,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -46,7 +50,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
@@ -60,7 +64,13 @@ fun LoginScreen(navController: NavController) {
                 val passwordStr = password.value
 
                 if (emailStr.isEmpty() || passwordStr.isEmpty()) {
-                    Toast.makeText(navController.context, "Login failed : Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    // Error message if both fields are empty
+                    Toast.makeText(
+                        navController.context,
+                        navController.context.getString(R.string.login_failed_empty_fields),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     return@Button
                 }
 
@@ -71,18 +81,22 @@ fun LoginScreen(navController: NavController) {
                             navController.navigate("home")
                         } else {
                             // Only show error if login fails
-                            Toast.makeText(navController.context, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                navController.context,
+                                navController.context.getString(R.string.login_failed),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
             }
         ) {
-            Text("Login")
+            Text(stringResource(R.string.login))
         }
 
 
         // Navigate to RegisterScreen
         Text(
-            text = "Register instead",
+            text = stringResource(R.string.register_instead),
             color = MaterialTheme.colorScheme.primary,
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
@@ -91,5 +105,9 @@ fun LoginScreen(navController: NavController) {
                     navController.navigate("register")
                 }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        LanguageSelector() // LanguageSelector at the bottom
     }
 }

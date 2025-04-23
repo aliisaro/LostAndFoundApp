@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LostAndFoundApp</string>
+    <string name="welcome_message">Tervetuloa Kadonneet ja Löytyneet -sovellukseen!</string>
+    <string name="language">Kieli: %1$s</string>
+    <string name="login">Kirjaudu sisään</string>
+    <string name="email">Sähköposti</string>
+    <string name="password">Salasana</string>
+    <string name="register_instead">Rekisteröidy mielummin</string>
+    <string name="register">Reksiteröidy</string>
+    <string name="login_instead">Kirjaudu sisään mielummin</string>
+    <string name="login_failed_empty_fields">Kirjautuminen epäonnistui: sähköposti ja salasana eivät voi olla tyhjät</string>
+    <string name="login_failed">Kirjautuminen epäonnistui</string>
+    <string name="registration_failed_empty_fields">Rekisteröityminen epäonnistui: sähköposti ja salasana eivät voi olla tyhjät</string>
+    <string name="registration_failed">Rekisteröityminen epäonnistu</string>
+    <string name="registration_succesfull">Rekisteröityminen onnistui</string>
+</resources>

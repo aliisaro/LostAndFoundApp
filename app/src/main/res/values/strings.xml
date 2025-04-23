@@ -1,3 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="app_name">LostAndFoundApp</string>
+    <string name="language">Language: %1$s</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="register_instead">Register instead</string>
+    <string name="register">Register</string>
+    <string name="login_instead">Login instead</string>
+    <string name="login_failed_empty_fields">Login failed: Email and password cannot be empty</string>
+    <string name="login_failed">Login failed</string>'
+
+    <string name="registration_failed_empty_fields">Registration failed: Email and password cannot be empty</string>
+    <string name="welcome_message">Welcome to the Lost &amp; Found App!</string>
+    <string name="registration_failed">Registration failed</string>
+    <string name="registration_succesfull">Registration succesful</string>
+
 </resources>

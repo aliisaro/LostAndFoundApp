@@ -5,9 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lostandfoundapp.R
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -23,7 +25,7 @@ fun HomeScreen(navController: NavController) {
 
         // Tervetuloteksti
         Text(
-            text = "Welcome to the Lost & Found App!",
+            text = stringResource(R.string.welcome_message),
             style = MaterialTheme.typography.headlineMedium, // Käytetään Materiaali-tyylitystä
             color = MaterialTheme.colorScheme.primary
         )
@@ -105,5 +107,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             Text("Log out", color = MaterialTheme.colorScheme.onError)
         }
+
+        LanguageSelector() // LanguageSelector at the bottom
     }
 }

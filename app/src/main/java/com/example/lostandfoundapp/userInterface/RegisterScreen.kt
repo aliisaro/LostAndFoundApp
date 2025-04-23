@@ -9,10 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lostandfoundapp.R
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -22,14 +24,16 @@ fun RegisterScreen(navController: NavController) {
     val password = remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         Spacer(modifier = Modifier.height(20.dp))
 
         // Using default Text style
-        Text(text = "Register", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(R.string.register), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -37,7 +41,7 @@ fun RegisterScreen(navController: NavController) {
         OutlinedTextField(
             value = email.value,
             onValueChange = { email.value = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -47,7 +51,7 @@ fun RegisterScreen(navController: NavController) {
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             visualTransformation = PasswordVisualTransformation()
         )
@@ -61,7 +65,13 @@ fun RegisterScreen(navController: NavController) {
                 val passwordStr = password.value
 
                 if (emailStr.isEmpty() || passwordStr.isEmpty()) {
-                    Toast.makeText(navController.context, "Registration failed: Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+                    // Error message if both fields are empty
+                    Toast.makeText(
+                        navController.context,
+                        navController.context.getString(R.string.registration_failed_empty_fields),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     return@Button
                 }
 
@@ -69,22 +79,31 @@ fun RegisterScreen(navController: NavController) {
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             // On successful registration, navigate to login page
-                            Toast.makeText(navController.context, "Registration successful", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                navController.context,
+                                navController.context.getString(R.string.registration_succesfull),
+                                Toast.LENGTH_SHORT
+                            ).show()
+
                             navController.navigate("login")
                         } else {
                             // Show error message if registration fails
-                            Toast.makeText(navController.context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                navController.context,
+                                navController.context.getString(R.string.registration_failed),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
             }
         ) {
-            Text("Register")
+            Text(stringResource(R.string.register))
         }
 
 
         // Navigate to LoginScreen
         Text(
-            text = "Login instead",
+            text = stringResource(R.string.login_instead),
             color = MaterialTheme.colorScheme.primary,
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
@@ -93,6 +112,10 @@ fun RegisterScreen(navController: NavController) {
                     navController.navigate("login")
                 }
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        LanguageSelector() // LanguageSelector at the bottom
     }
 }
 
