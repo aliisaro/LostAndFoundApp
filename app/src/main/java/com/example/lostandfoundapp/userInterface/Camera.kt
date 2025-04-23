@@ -26,6 +26,8 @@ import java.io.File
 import android.content.Intent
 import android.os.Environment
 import android.net.Uri
+import androidx.compose.ui.res.stringResource
+import com.example.lostandfoundapp.R
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -52,7 +54,7 @@ fun CameraScreen(navController: NavController) {
             horizontalArrangement = Arrangement.End
         ) {
             Button(onClick = { navController.navigate("home") }) {
-                Text("Go to home page")
+                Text(text = stringResource(R.string.go_back))
             }
         }
 
@@ -113,7 +115,8 @@ fun CameraScreen(navController: NavController) {
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                            Toast.makeText(context, "Image saved to: ${photoFile.absolutePath}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.image_saved_to, photoFile.absolutePath), Toast.LENGTH_SHORT).show()
 
                             // Broadcast to make image appear in gallery apps
                             val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
@@ -122,7 +125,8 @@ fun CameraScreen(navController: NavController) {
                         }
 
                         override fun onError(exception: ImageCaptureException) {
-                            Toast.makeText(context, "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.capture_failed, exception.message), Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
@@ -131,7 +135,7 @@ fun CameraScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            Text("Capture")
+            Text(stringResource(R.string.capture))
         }
     }
 }

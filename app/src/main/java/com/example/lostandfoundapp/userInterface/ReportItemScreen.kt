@@ -16,10 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.storage.FirebaseStorage
@@ -101,10 +103,12 @@ fun ReportItemScreen(navController: NavHostController) {
                                     showContactEmail = checked.value
                                 )
                                 // Show success Toast
-                                Toast.makeText(context, "Item added successfully!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,
+                                    context.getString(R.string.item_added_successfully), Toast.LENGTH_SHORT).show()
                             } catch (e: Exception) {
                                 // Show error Toast
-                                Toast.makeText(context, "Failed to add item: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,
+                                    context.getString(R.string.failed_to_add_item), Toast.LENGTH_SHORT).show()
                                 Log.e("ReportItemScreen", "Error adding item: ${e.message}")
                             }
                         }
@@ -112,21 +116,25 @@ fun ReportItemScreen(navController: NavHostController) {
                 }
                 .addOnFailureListener { e ->
                     // Show error Toast if image upload fails
-                    Toast.makeText(context, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT).show()
                 }
 
         } else {
             // Show error Toast if form fields are missing
-            Toast.makeText(context, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.required_fields_error), Toast.LENGTH_SHORT).show()
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Report Lost Item", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text(text = stringResource(R.string.report_lost_item), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -135,7 +143,7 @@ fun ReportItemScreen(navController: NavHostController) {
             value = title.value,
             onValueChange = { title.value = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter title") }
+            label = { Text(stringResource(R.string.enter_title)) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -145,20 +153,21 @@ fun ReportItemScreen(navController: NavHostController) {
             value = description.value,
             onValueChange = { description.value = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter description") }
+            label = { Text(stringResource(R.string.enter_description)) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Category selection using Radio Buttons
-        Text("Select a category:", fontSize = 18.sp)
+        Text(stringResource(R.string.select_a_category), fontSize = 18.sp)
+
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = category.value == "Clothing",
                     onClick = { category.value = "Clothing" }
                 )
-                Text("Clothing")
+                Text(stringResource(R.string.clothing))
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -166,7 +175,7 @@ fun ReportItemScreen(navController: NavHostController) {
                     selected = category.value == "Accessories",
                     onClick = { category.value = "Accessories" }
                 )
-                Text("Accessories")
+                Text(stringResource(R.string.accessories))
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -174,7 +183,7 @@ fun ReportItemScreen(navController: NavHostController) {
                     selected = category.value == "Keys",
                     onClick = { category.value = "Keys" }
                 )
-                Text("Keys")
+                Text(stringResource(R.string.keys))
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -182,7 +191,7 @@ fun ReportItemScreen(navController: NavHostController) {
                     selected = category.value == "Other",
                     onClick = { category.value = "Other" }
                 )
-                Text("Other")
+                Text(stringResource(R.string.other))
             }
         }
 
@@ -191,19 +200,19 @@ fun ReportItemScreen(navController: NavHostController) {
         // Image selection button
         Row(verticalAlignment = Alignment.CenterVertically) {
             Button(onClick = { getContent.launch("image/*") }) {
-                Text(text = "Select Image")
+                Text(text = stringResource(R.string.select_image))
             }
 
             // Display selected image
             if (imageUri.value != null) {
-                Text(text = "  Image selected")
+                Text(text = stringResource(R.string.image_selected))
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Image selected",
                     tint = Color(0xFF4CAF50) // Green checkmark
                 )
             } else {
-                Text(text = "  No image selected", color = Color.Gray)
+                Text(text = stringResource(R.string.no_image_selected), color = Color.Gray)
             }
         }
 
@@ -214,7 +223,7 @@ fun ReportItemScreen(navController: NavHostController) {
             value = latitude.value,
             onValueChange = { latitude.value = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter latitude") }
+            label = { Text(stringResource(R.string.enter_latitude)) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -224,12 +233,12 @@ fun ReportItemScreen(navController: NavHostController) {
             value = longitude.value,
             onValueChange = { longitude.value = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Enter longitude") }
+            label = { Text(stringResource(R.string.enter_longitude)) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(text = "Latitude and longitude are automatically set to device location, but you can change them.",
+        Text(text = stringResource(R.string.latlng_info),
             fontSize = 13.sp,
             color = Color.Gray)
 
@@ -237,7 +246,7 @@ fun ReportItemScreen(navController: NavHostController) {
         Row(verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
         ) {
-            Text(text = "I want to show my email address.")
+            Text(text = stringResource(R.string.show_email))
             Spacer(modifier = Modifier.width(8.dp))
             Checkbox(
                 checked = checked.value,
@@ -248,16 +257,15 @@ fun ReportItemScreen(navController: NavHostController) {
         // Button to add the item
         Button(onClick = { reportItemButtonAction()
         }) {
-            Text("Report Item")
+            Text(stringResource(R.string.report_item))
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(onClick = { navController.navigate("home") }) {
-            Text("Go back")
+            Text(stringResource(R.string.go_back))
         }
     }
 }
-
 
 

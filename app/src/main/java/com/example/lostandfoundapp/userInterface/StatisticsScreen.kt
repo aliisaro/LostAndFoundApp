@@ -12,6 +12,8 @@ import androidx.navigation.NavController
 import com.example.lostandfoundapp.database.DatabaseHelper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
+import com.example.lostandfoundapp.R
 
 @Composable
 fun StatisticsScreen(navController: NavController) {
@@ -34,7 +36,7 @@ fun StatisticsScreen(navController: NavController) {
             .padding(20.dp)
     ) {
         Text(
-            text = "Statistics",
+            text = stringResource(R.string.statistics),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -47,13 +49,13 @@ fun StatisticsScreen(navController: NavController) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         } else {
             // Displaying stats with simple cards and spacing
-            StatCard(title = "Total Items reported", value = stats!!["total"])
+            StatCard(title = stringResource(R.string.total_items_reported), value = stats!!["total"])
             Spacer(modifier = Modifier.height(12.dp))
 
-            StatCard(title = "Items Lost", value = stats!!["lost"], color = MaterialTheme.colorScheme.error)
+            StatCard(title = stringResource(R.string.items_lost), value = stats!!["lost"], color = MaterialTheme.colorScheme.error)
             Spacer(modifier = Modifier.height(12.dp))
 
-            StatCard(title = "Items Found", value = stats!!["found"], color = MaterialTheme.colorScheme.secondary)
+            StatCard(title = stringResource(R.string.items_found), value = stats!!["found"], color = MaterialTheme.colorScheme.secondary)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -61,7 +63,7 @@ fun StatisticsScreen(navController: NavController) {
                 onClick = { navController.navigate("home") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Go back")
+                Text(text = stringResource(R.string.go_back))
             }
         }
     }

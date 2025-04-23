@@ -18,15 +18,14 @@ fun HomeScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, // Keskitetään elementit
-        verticalArrangement = Arrangement.spacedBy(16.dp) // Välimatkat elementtien välillä
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Tervetuloteksti
         Text(
             text = stringResource(R.string.welcome_message),
-            style = MaterialTheme.typography.headlineMedium, // Käytetään Materiaali-tyylitystä
+            style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary
         )
 
@@ -38,7 +37,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Go to Map", color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.open_map), color = MaterialTheme.colorScheme.onPrimary)
         }
 
         // Go to search screen
@@ -47,7 +46,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Search for items", color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.search_for_items), color = MaterialTheme.colorScheme.onSecondary)
         }
 
         // Go to report item screen
@@ -56,7 +55,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text("Report item", color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.report_item), color = MaterialTheme.colorScheme.onSecondary)
         }
 
         Button(
@@ -64,7 +63,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text("Edit My Reports", color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.edit_my_reports), color = MaterialTheme.colorScheme.onSecondary)
         }
 
         // Go to take a picture with the camera
@@ -73,7 +72,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
-            Text("Take picture", color = MaterialTheme.colorScheme.onTertiary)
+            Text(stringResource(R.string.take_a_picture), color = MaterialTheme.colorScheme.onTertiary)
         }
 
         // Go to Profile screen
@@ -82,7 +81,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
-            Text("Go to Profile", color = MaterialTheme.colorScheme.onTertiary)
+            Text(stringResource(R.string.go_to_profile), color = MaterialTheme.colorScheme.onTertiary)
         }
 
 
@@ -92,7 +91,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
-            Text("Statistics", color = MaterialTheme.colorScheme.onTertiary)
+            Text(stringResource(R.string.statistics), color = MaterialTheme.colorScheme.onTertiary)
         }
 
 
@@ -105,7 +104,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
         ) {
-            Text("Log out", color = MaterialTheme.colorScheme.onError)
+            Text(stringResource(R.string.log_out), color = MaterialTheme.colorScheme.onError)
         }
 
         LanguageSelector() // LanguageSelector at the bottom

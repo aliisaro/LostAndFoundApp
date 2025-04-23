@@ -15,11 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
 import kotlinx.coroutines.launch
@@ -60,7 +62,7 @@ fun SearchItemScreen(navController: NavController) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Search for item...") },
+                label = { Text(stringResource(R.string.search_for_item)) },
                 singleLine = true,
                 modifier = Modifier
                     .weight(1f)
@@ -69,7 +71,7 @@ fun SearchItemScreen(navController: NavController) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Button(onClick = { navController.navigate("home") }) {
-                Text("Go Back")
+                Text(text = stringResource(R.string.go_back))
             }
         }
 
@@ -81,12 +83,19 @@ fun SearchItemScreen(navController: NavController) {
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val categories = listOf("All", "Clothing", "Keys", "Accessories", "Other")
-            categories.forEach { category ->
+            val categoryMap = mapOf(
+                "All" to stringResource(R.string.all),
+                "Clothing" to stringResource(R.string.clothing),
+                "Keys" to stringResource(R.string.keys),
+                "Accessories" to stringResource(R.string.accessories),
+                "Other" to stringResource(R.string.other)
+            )
+
+            categoryMap.forEach { (key, label) ->
                 FilterChip(
-                    selected = selectedCategory == category,
-                    onClick = { selectedCategory = category },
-                    label = { Text(category) }
+                    selected = selectedCategory == key,
+                    onClick = { selectedCategory = key },
+                    label = { Text(label) }
                 )
             }
         }
@@ -96,21 +105,21 @@ fun SearchItemScreen(navController: NavController) {
 
         Box(modifier = Modifier.padding(vertical = 12.dp)) {
             Button(onClick = { expanded = true }) {
-                Text("Sort: $sortOrder")
+                Text(stringResource(R.string.sort, sortOrder))
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Newest") },
+                    text = { Text(stringResource(R.string.newest)) },
                     onClick = {
                         sortOrder = "Newest"
                         expanded = false
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Oldest") },
+                    text = { Text(stringResource(R.string.oldest)) },
                     onClick = {
                         sortOrder = "Oldest"
                         expanded = false
@@ -197,7 +206,7 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Category:",
+                    text = stringResource(R.string.category),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -206,7 +215,7 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Description:",
+                    text = stringResource(R.string.description),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -215,7 +224,7 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Reported At:",
+                    text = stringResource(R.string.reported_at),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -225,7 +234,7 @@ fun ItemDetails(
 
                 if (item.showContactEmail) {
                     Text(
-                        text = "Contact: ${item.contactEmail}",
+                        text = stringResource(R.string.contact, item.contactEmail),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -233,7 +242,7 @@ fun ItemDetails(
                 }
 
                 Text(
-                    text = "Location:",
+                    text = stringResource(R.string.location),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -245,17 +254,18 @@ fun ItemDetails(
                 Button(
                     onClick = {
                         clipboardManager.setText(AnnotatedString(locationText))
-                        Toast.makeText(context, "Location copied to clipboard", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,
+                            context.getString(R.string.location_copied_to_clipboard), Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(top = 10.dp)
                 ) {
-                    Text("Copy Location")
+                    Text(stringResource(R.string.copy_location))
                 }
             }
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         }
     )
