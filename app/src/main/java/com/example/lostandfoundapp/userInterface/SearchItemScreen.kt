@@ -207,15 +207,6 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = stringResource(R.string.category),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Text(text = item.category)
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
                     text = stringResource(R.string.description),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp

@@ -18,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
 import com.google.android.gms.location.LocationServices
@@ -54,13 +56,22 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
         imageChanged.value = true
     }
 
+    val englishToLocalizedCategoryMap = mapOf(
+        "clothing" to context.getString(R.string.clothing),
+        "accessories" to context.getString(R.string.accessories),
+        "keys" to context.getString(R.string.keys),
+        "other" to context.getString(R.string.other)
+    )
+
+    val localizedToEnglishCategoryMap = englishToLocalizedCategoryMap.entries.associate { (eng, local) -> local to eng }
+
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             item = DatabaseHelper().getItemById(itemId)
             item?.let {
                 title.value = it.title
                 description.value = it.description
-                category.value = it.category
+                category.value = englishToLocalizedCategoryMap[it.category] ?: context.getString(R.string.other)
                 latitude.value = it.location?.latitude?.toString() ?: ""
                 longitude.value = it.location?.longitude?.toString() ?: ""
                 checked.value = it.showContactEmail
@@ -84,7 +95,7 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
     fun updateItemButtonAction() {
         if (title.value.isEmpty() || description.value.isEmpty() || category.value.isEmpty() ||
             latitude.value.isEmpty() || longitude.value.isEmpty()) {
-            Toast.makeText(context, "Please fill in all required fields.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.required_fields_error), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -95,15 +106,17 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                         itemId = itemId,
                         title = title.value,
                         description = description.value,
-                        category = category.value,
+                        category = localizedToEnglishCategoryMap[category.value] ?: "other",
                         imageUrl = imageUrl ?: item?.imageUrl ?: "",
                         latitude = latitude.value.toDouble(),
                         longitude = longitude.value.toDouble(),
                         showContactEmail = checked.value
                     )
-                    Toast.makeText(context, "Item updated successfully!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.item_updated_successfully), Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(context, "Failed to update item: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.failed_to_update_item, e.message), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -118,7 +131,8 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(context, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT).show()
                 }
         } else {
             updateToDatabase(null)
@@ -129,28 +143,32 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
         coroutineScope.launch {
             try {
                 DatabaseHelper().deleteItem(itemId)
-                Toast.makeText(context, "Item deleted successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,
+                    context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT).show()
                 navController.navigate("home")
             } catch (e: Exception) {
-                Toast.makeText(context, "Failed to delete item: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,
+                    context.getString(R.string.failed_to_delete_item, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
     if (showDeleteConfirmation.value) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation.value = false },
-            title = { Text("Confirm Deletion") },
-            text = { Text("Are you sure you want to delete this report? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.confirm_deletion)) },
+            text = { Text(stringResource(R.string.action_cannot_be_undone)) },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirmation.value = false
                     coroutineScope.launch {
                         try {
                             DatabaseHelper().deleteItem(itemId)
-                            Toast.makeText(context, "Item deleted successfully!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT).show()
                             navController.navigate("home")
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Failed to delete item: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.failed_to_delete_item, e.message), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }) {
@@ -159,7 +177,7 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmation.value = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -174,17 +192,18 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                 .verticalScroll(scrollState)
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Edit Reported Item", style = MaterialTheme.typography.headlineSmall)
+            Text(text = stringResource(R.string.edit_reported_item), style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(20.dp))
 
-            TextField(value = title.value, onValueChange = { title.value = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
+            TextField(value = title.value, onValueChange = { title.value = it }, label = { Text(stringResource(R.string.title)) }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(10.dp))
 
-            TextField(value = description.value, onValueChange = { description.value = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
+            TextField(value = description.value, onValueChange = { description.value = it }, label = { Text(stringResource(R.string.description)) }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text("Select a category:", fontSize = 18.sp)
-            val categories = listOf("Clothing", "Accessories", "Keys", "Other")
+            Text(stringResource(R.string.select_a_category), fontSize = 18.sp)
+
+            val categories = listOf(stringResource(R.string.clothing), stringResource(R.string.accessories), stringResource(R.string.keys), stringResource(R.string.other))
             categories.forEach { cat ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(selected = category.value == cat, onClick = { category.value = cat })
@@ -195,14 +214,14 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { getContent.launch("image/*") }) {
-                    Text("Select Image")
+                    Text(stringResource(R.string.select_image))
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 if (imageUri.value != null || it.imageUrl.isNotEmpty()) {
                     Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF4CAF50))
-                    Text(" Image selected")
+                    Text(stringResource(R.string.image_selected))
                 } else {
-                    Text(" No image selected", color = Color.Gray)
+                    Text(stringResource(R.string.no_image_selected), color = Color.Gray)
                 }
             }
 
@@ -210,19 +229,19 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
             TextField(value = latitude.value, onValueChange = { latitude.value = it }, label = { Text("Latitude") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(10.dp))
             TextField(value = longitude.value, onValueChange = { longitude.value = it }, label = { Text("Longitude") }, modifier = Modifier.fillMaxWidth())
-            Text("Tap 'Use Current Location' to autofill coordinates.", fontSize = 13.sp, color = Color.Gray)
+            Text(stringResource(R.string.autofill_coordinates), fontSize = 13.sp, color = Color.Gray)
 
             Button(onClick = { getCurrentLocation() }, modifier = Modifier.padding(vertical = 10.dp)) {
-                Text("Use Current Location")
+                Text(stringResource(R.string.use_current_location))
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Show contact email")
+                Text(stringResource(R.string.show_contact_email))
                 Checkbox(checked = checked.value, onCheckedChange = { checked.value = it })
             }
 
             Button(onClick = { updateItemButtonAction() }) {
-                Text("Update Item")
+                Text(stringResource(R.string.update_item))
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -230,12 +249,12 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                 onClick = { showDeleteConfirmation.value = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
-                Text("Delete Report", color = Color.White)
+                Text(stringResource(R.string.delete_report), color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(10.dp))
             Button(onClick = { navController.navigate("home") }) {
-                Text("Go back")
+                Text(stringResource(R.string.go_back))
             }
         }
     }

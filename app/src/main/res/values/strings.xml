@@ -46,6 +46,7 @@
     <string name="failed_to_upload_image">Failed to upload image</string>
     <string name="failed_to_add_item">Failed to add item</string>
     <string name="item_added_successfully">Item added successfully!</string>
+    <string name="error_adding_item">Error adding item</string>
     <string name="image_saved_to">Image saved to: %1$s</string>
     <string name="capture">Capture</string>
     <string name="capture_failed">Capture failed: %1$s</string>
@@ -56,7 +57,7 @@
     <string name="copy_location">Copy Location</string>
     <string name="location_copied_to_clipboard">Location copied to clipboard</string>
     <string name="location">Location:</string>
-    <string name="contact">Contact: %1$s</string>
+    <string name="contact">"Contact: "</string>
     <string name="reported_at">Reported At:</string>
     <string name="description">Description:</string>
     <string name="category">Category:</string>
@@ -74,4 +75,21 @@
     <string name="enable_location">Enable Location</string>
     <string name="map">Map</string>
     <string name="search_your_reports">Search your reports...</string>
+    <string name="change_password">Change Password</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="welcome">Welcome, %1$s</string>
+    <string name="delete_report">Delete Report</string>
+    <string name="update_item">Update Item</string>
+    <string name="show_contact_email">Show contact email</string>
+    <string name="use_current_location">Use Current Location</string>
+    <string name="autofill_coordinates">Tap \'Use Current Location\' to autofill coordinates.</string>
+    <string name="title">Title</string>
+    <string name="edit_reported_item">Edit Reported Item</string>
+    <string name="cancel">Cancel</string>
+    <string name="item_deleted_successfully">Item deleted successfully!</string>
+    <string name="failed_to_delete_item">Failed to delete item: %1$s</string>
+    <string name="action_cannot_be_undone">Are you sure you want to delete this report? This action cannot be undone.</string>
+    <string name="confirm_deletion">Confirm Deletion</string>
+    <string name="failed_to_update_item">Failed to update item: %1$s</string>
+    <string name="item_updated_successfully">Item updated successfully!</string>
 </resources>

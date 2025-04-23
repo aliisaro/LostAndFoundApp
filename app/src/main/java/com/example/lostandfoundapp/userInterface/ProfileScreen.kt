@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.R
@@ -43,7 +44,7 @@ fun ProfileScreen(navController: NavController) {
 
         // Otsikko
         Text(
-            text = "Welcome, $userName",
+            text = stringResource(R.string.welcome, userName),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary
         )
@@ -52,7 +53,7 @@ fun ProfileScreen(navController: NavController) {
 
         // Email
         Text(
-            text = "Email: $userEmail",
+            text = stringResource(R.string.email) + ": $userEmail",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
@@ -70,7 +71,7 @@ fun ProfileScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Edit Profile", color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.edit_profile), color = MaterialTheme.colorScheme.onPrimary)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -81,7 +82,7 @@ fun ProfileScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text("Change Password", color = MaterialTheme.colorScheme.onSecondary)
+            Text(stringResource(R.string.change_password), color = MaterialTheme.colorScheme.onSecondary)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -95,14 +96,14 @@ fun ProfileScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
         ) {
-            Text("Log out", color = MaterialTheme.colorScheme.onError)
+            Text(stringResource(R.string.log_out), color = MaterialTheme.colorScheme.onError)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Go back to homepage button
         Button(onClick = { navController.navigate("home") }, modifier = Modifier.fillMaxWidth()) {
-            Text("Go back to home page")
+            Text(stringResource(R.string.go_back))
         }
     }
 }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">LostAndFoundApp</string>
-    <string name="welcome_message">Tervetuloa Kadonneet ja Löytyneet -sovellukseen!</string>
+    <string name="welcome_message">Tervetuloa Lost and Found -sovellukseen!</string>
     <string name="language">Kieli: %1$s</string>
     <string name="login">Kirjaudu sisään</string>
     <string name="email">Sähköposti</string>
@@ -23,7 +23,7 @@
     <string name="statistics">Tilastot</string>
     <string name="logout_message">Olet kirjautunut ulos</string>
     <string name="or">tai</string>
-    <string name="go_back">Palaa</string>
+    <string name="go_back">Takaisin</string>
     <string name="show_email">Haluan näyttää sähköpostiosoitteeni.</string>
     <string name="latlng_info">Leveys- ja pituusaste asetetaan automaattisesti laitteen sijaintiin, mutta voit muuttaa niitä.</string>
     <string name="enter_longitude">Anna pituusaste</string>
@@ -44,6 +44,7 @@
     <string name="failed_to_upload_image">Kuvan lataaminen epäonnistui</string>
     <string name="failed_to_add_item">Esineen lisääminen epäonnistui</string>
     <string name="item_added_successfully">Esine lisätty onnistuneesti!</string>
+    <string name="error_adding_item">Virhe esineen lisäämisessä</string>
     <string name="image_saved_to">Kuva tallennettu: %1$s</string>
     <string name="capture">Ota kuva</string>
     <string name="capture_failed">Kuvaus epäonnistui: %1$s</string>
@@ -54,7 +55,7 @@
     <string name="copy_location">Kopioi sijainti</string>
     <string name="location_copied_to_clipboard">Sijainti kopioitu leikepöydälle</string>
     <string name="location">Sijanti:</string>
-    <string name="contact">Yhteystieto: %1$s</string>
+    <string name="contact">Yhteystieto:</string>
     <string name="reported_at">Ilmoitettu:</string>
     <string name="description">Kuvaus:</string>
     <string name="category">Kategoria:</string>
@@ -62,7 +63,7 @@
     <string name="oldest">Vanhin</string>
     <string name="sort">Lajittele: %1$s</string>
     <string name="search_for_item">Etsi esinettä..</string>
-    <string name="confirm_ownership">Olen tämän esineen omistaja ja löysin esineen.</string>
+    <string name="confirm_ownership">Olen tämän esineen omistaja ja olen löytänyt tämän esineen.</string>
     <string name="mark_as_found">Merkitse löydetyksi</string>
     <string name="distance_to_item">Matka esineeseen:</string>
     <string name="item_marked_as_found">Esine merkitty löydetyksi!</string>
@@ -72,4 +73,21 @@
     <string name="enable_location">Ota sijainti käyttöön</string>
     <string name="map">Kartta</string>
     <string name="search_your_reports">Etsi omista ilmoituksista...</string>
+    <string name="change_password">Vaihda salasana</string>
+    <string name="edit_profile">Muokkaa profiilia</string>
+    <string name="welcome">Tervetuloa, %1$s</string>
+    <string name="delete_report">Poista ilmoitus</string>
+    <string name="update_item">Päivitä esinettä</string>
+    <string name="show_contact_email">Näytä sähköposti-osoite</string>
+    <string name="use_current_location">Käytä nykyistä sijaintia</string>
+    <string name="autofill_coordinates">Täytä koordinaatit automaattisesti napauttamalla \'Käytä nykyistä sijaintia\'.</string>
+    <string name="title">Otsikko</string>
+    <string name="edit_reported_item">Muokkaa ilmoitettua esinettä</string>
+    <string name="cancel">Peruuta</string>
+    <string name="item_deleted_successfully">Esine poistettu onnistuneesti!</string>
+    <string name="failed_to_delete_item">Virhe esineen poistamisessa: %1$s</string>
+    <string name="action_cannot_be_undone">Haluatko varmasti poistaa tämän ilmoituksen? Tätä toimintoa ei voi kumota.</string>
+    <string name="confirm_deletion">Vahvista poisto</string>
+    <string name="failed_to_update_item">Virhe esineen päivittämisessä: %1$s</string>
+    <string name="item_updated_successfully">Esine päivitetty onnistuneesti!</string>
 </resources>

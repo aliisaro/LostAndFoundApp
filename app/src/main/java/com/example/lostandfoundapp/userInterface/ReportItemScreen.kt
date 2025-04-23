@@ -109,7 +109,8 @@ fun ReportItemScreen(navController: NavHostController) {
                                 // Show error Toast
                                 Toast.makeText(context,
                                     context.getString(R.string.failed_to_add_item), Toast.LENGTH_SHORT).show()
-                                Log.e("ReportItemScreen", "Error adding item: ${e.message}")
+                                Log.e("ReportItemScreen",
+                                    context.getString(R.string.error_adding_item))
                             }
                         }
                     }

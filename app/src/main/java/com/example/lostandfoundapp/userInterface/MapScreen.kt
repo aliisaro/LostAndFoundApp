@@ -38,6 +38,7 @@ fun MapScreen(navController: NavController) {
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
     val locationPermissionGranted = remember { mutableStateOf(false) }
 
+    var pastedLocation by remember { mutableStateOf<LatLng?>(null) }
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     var searchGeoPoint by remember { mutableStateOf<String>("") }
 
@@ -111,7 +112,7 @@ fun MapScreen(navController: NavController) {
                         if (matchResult != null) {
                             val latitude = matchResult.groupValues[1].toDouble()
                             val longitude = matchResult.groupValues[2].toDouble()
-                            userLocation = LatLng(latitude, longitude)
+                            pastedLocation = LatLng(latitude, longitude)
                             searchGeoPoint = ""
                         } else {
                             Toast.makeText(context,
@@ -126,6 +127,7 @@ fun MapScreen(navController: NavController) {
                     GoogleMapView(
                         items = items,
                         userLocation = userLocation,
+                        pastedLocation = pastedLocation,
                         onItemFound = {
                             CoroutineScope(Dispatchers.Main).launch {
                                 items = databaseHelper.getLostItems()
@@ -144,6 +146,7 @@ fun MapScreen(navController: NavController) {
 fun GoogleMapView(
     items: List<Item>,
     userLocation: LatLng?,
+    pastedLocation: LatLng?,
     onItemFound: () -> Unit
 ) {
     val defaultLocation = LatLng(60.16952, 24.93545)
@@ -153,9 +156,9 @@ fun GoogleMapView(
 
     var selectedItem by remember { mutableStateOf<Item?>(null) }
 
-    // Update camera position whenever userLocation changes
-    LaunchedEffect(userLocation) {
-        userLocation?.let {
+    // Update camera position whenever the pasted location changes
+    LaunchedEffect(pastedLocation) {
+        pastedLocation?.let {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 12f)
         }
     }
@@ -169,7 +172,7 @@ fun GoogleMapView(
         items.forEach { item ->
             item.location?.let { location ->
                 Marker(
-                    state = rememberMarkerState(position = LatLng(location.latitude, location.longitude)),
+                    state = MarkerState(position = LatLng(location.latitude, location.longitude)),
                     title = item.title,
                     snippet = item.description,
                     onClick = {
@@ -234,10 +237,6 @@ fun ItemDetails(
                         .fillMaxWidth()
                         .height(200.dp)
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(stringResource(R.string.category), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(item.category)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
