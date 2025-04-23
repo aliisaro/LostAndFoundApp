@@ -13,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
 import com.google.firebase.auth.FirebaseAuth
@@ -29,7 +31,7 @@ fun SearchItemEditScreen(navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
     var selectedCategory by remember { mutableStateOf("All") }
-    var sortOrder by remember { mutableStateOf("Newest") }
+    var sortOrderResId by remember { mutableStateOf(R.string.newest) }
     val coroutineScope = rememberCoroutineScope()
     val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
 
@@ -58,7 +60,7 @@ fun SearchItemEditScreen(navController: NavController) {
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Search your reports...") },
+                label = { Text(stringResource(R.string.search_your_reports)) },
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
@@ -66,7 +68,7 @@ fun SearchItemEditScreen(navController: NavController) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Button(onClick = { navController.navigate("home") }) {
-                Text("Go Back")
+                Text(stringResource(R.string.go_back))
             }
         }
 
@@ -76,34 +78,48 @@ fun SearchItemEditScreen(navController: NavController) {
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val categories = listOf("All", "Clothing", "Keys", "Accessories", "Other")
-            categories.forEach { category ->
+            val categoryMap = mapOf(
+                "All" to stringResource(R.string.all),
+                "Clothing" to stringResource(R.string.clothing),
+                "Keys" to stringResource(R.string.keys),
+                "Accessories" to stringResource(R.string.accessories),
+                "Other" to stringResource(R.string.other)
+            )
+
+            categoryMap.forEach { (key, label) ->
                 FilterChip(
-                    selected = selectedCategory == category,
-                    onClick = { selectedCategory = category },
-                    label = { Text(category) }
+                    selected = selectedCategory == key,
+                    onClick = { selectedCategory = key },
+                    label = { Text(label) }
                 )
             }
         }
 
         var expanded by remember { mutableStateOf(false) }
+        val currentSortLabel = stringResource(id = sortOrderResId)
 
         Box(modifier = Modifier.padding(vertical = 12.dp)) {
             Button(onClick = { expanded = true }) {
-                Text("Sort: $sortOrder")
+                Text(stringResource(R.string.sort, currentSortLabel))
             }
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DropdownMenuItem(text = { Text("Newest") }, onClick = {
-                    sortOrder = "Newest"
-                    expanded = false
-                })
-                DropdownMenuItem(text = { Text("Oldest") }, onClick = {
-                    sortOrder = "Oldest"
-                    expanded = false
-                })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.newest)) },
+                    onClick = {
+                        sortOrderResId = R.string.newest
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.oldest)) },
+                    onClick = {
+                        sortOrderResId = R.string.oldest
+                        expanded = false
+                    }
+                )
             }
         }
 
@@ -114,9 +130,10 @@ fun SearchItemEditScreen(navController: NavController) {
                         (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true))
             }
             .let { list ->
-                if (sortOrder == "Oldest") list.sortedBy { it.registeredAt }
+                if (sortOrderResId == R.string.oldest) list.sortedBy { it.registeredAt }
                 else list.sortedByDescending { it.registeredAt }
             }
+
 
         LazyColumn {
             items(items = filteredItems) { item ->

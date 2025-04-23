@@ -12,12 +12,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.example.lostandfoundapp.model.Item
 import com.google.android.gms.location.LocationServices
@@ -71,12 +73,12 @@ fun MapScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text("Map Screen", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text(stringResource(R.string.map), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = { navController.navigate("home") }) {
-                Text("Go Back")
+                Text(stringResource(R.string.go_back))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -90,14 +92,14 @@ fun MapScreen(navController: NavController) {
                         )
                     )
                 }) {
-                    Text("Enable Location")
+                    Text(stringResource(R.string.enable_location))
                 }
             } else {
                 Column {
                     TextField(
                         value = searchGeoPoint,
                         onValueChange = { searchGeoPoint = it },
-                        label = { Text("Paste GeoPoint location") },
+                        label = { Text(stringResource(R.string.paste_geopoint_location)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -112,10 +114,11 @@ fun MapScreen(navController: NavController) {
                             userLocation = LatLng(latitude, longitude)
                             searchGeoPoint = ""
                         } else {
-                            Toast.makeText(context, "Invalid GeoPoint format", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context,
+                                context.getString(R.string.invalid_geopoint_format), Toast.LENGTH_SHORT).show()
                         }
                     }) {
-                        Text("Go to Location")
+                        Text(stringResource(R.string.go_to_location))
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -126,7 +129,8 @@ fun MapScreen(navController: NavController) {
                         onItemFound = {
                             CoroutineScope(Dispatchers.Main).launch {
                                 items = databaseHelper.getLostItems()
-                                Toast.makeText(context, "Item marked as found!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,
+                                    context.getString(R.string.item_marked_as_found), Toast.LENGTH_SHORT).show()
                             }
                         }
                     )
@@ -232,41 +236,41 @@ fun ItemDetails(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Category:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.category), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.category)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Description:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.description), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.description)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Location:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.location), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.location.toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Reported At:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 if (distanceInKm != null) {
-                    Text("Distance to item:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.distance_to_item), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(distanceInKm)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 if (item.showContactEmail) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Contact Email: ", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(stringResource(R.string.contact), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Text(item.contactEmail)
                     }
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Mark as Found", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.mark_as_found), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
                 }
             }
@@ -279,13 +283,14 @@ fun ItemDetails(
                     }
                     onDismiss()
                 }) {
-                    Text("I am the owner and I found this item")
+                    Text(stringResource(R.string.confirm_ownership))
                 }
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
+
             }
         }
     )

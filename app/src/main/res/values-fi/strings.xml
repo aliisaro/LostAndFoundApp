@@ -62,4 +62,14 @@
     <string name="oldest">Vanhin</string>
     <string name="sort">Lajittele: %1$s</string>
     <string name="search_for_item">Etsi esinettä..</string>
+    <string name="confirm_ownership">Olen tämän esineen omistaja ja löysin esineen.</string>
+    <string name="mark_as_found">Merkitse löydetyksi</string>
+    <string name="distance_to_item">Matka esineeseen:</string>
+    <string name="item_marked_as_found">Esine merkitty löydetyksi!</string>
+    <string name="go_to_location">Mene sijaintiin</string>
+    <string name="invalid_geopoint_format">Virheellinen GeoPoint-muoto</string>
+    <string name="paste_geopoint_location">Liitä GeoPoint-sijainti</string>
+    <string name="enable_location">Ota sijainti käyttöön</string>
+    <string name="map">Kartta</string>
+    <string name="search_your_reports">Etsi omista ilmoituksista...</string>
 </resources>

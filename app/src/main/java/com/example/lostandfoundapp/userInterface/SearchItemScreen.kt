@@ -32,7 +32,7 @@ fun SearchItemScreen(navController: NavController) {
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
     var selectedCategory by remember { mutableStateOf("All") }
-    var sortOrder by remember { mutableStateOf("Newest") } // or "Oldest"
+    var sortOrderResId by remember { mutableStateOf(R.string.newest) }
     val coroutineScope = rememberCoroutineScope()
 
     // Fetch and filter data based on search query
@@ -102,10 +102,11 @@ fun SearchItemScreen(navController: NavController) {
 
         // Sort dropdown
         var expanded by remember { mutableStateOf(false) }
+        val currentSortLabel = stringResource(id = sortOrderResId)
 
         Box(modifier = Modifier.padding(vertical = 12.dp)) {
             Button(onClick = { expanded = true }) {
-                Text(stringResource(R.string.sort, sortOrder))
+                Text(stringResource(R.string.sort, currentSortLabel))
             }
             DropdownMenu(
                 expanded = expanded,
@@ -114,14 +115,14 @@ fun SearchItemScreen(navController: NavController) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.newest)) },
                     onClick = {
-                        sortOrder = "Newest"
+                        sortOrderResId = R.string.newest
                         expanded = false
                     }
                 )
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.oldest)) },
                     onClick = {
-                        sortOrder = "Oldest"
+                        sortOrderResId = R.string.oldest
                         expanded = false
                     }
                 )
@@ -135,7 +136,7 @@ fun SearchItemScreen(navController: NavController) {
                         (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true))
             }
             .let { list ->
-                if (sortOrder == "Oldest") list.sortedBy { it.registeredAt }
+                if (sortOrderResId == R.string.oldest) list.sortedBy { it.registeredAt }
                 else list.sortedByDescending { it.registeredAt }
             }
 

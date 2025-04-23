@@ -64,4 +64,14 @@
     <string name="oldest">Oldest</string>
     <string name="sort">Sort: %1$s</string>
     <string name="search_for_item">Search for item...</string>
+    <string name="confirm_ownership">I am the owner and I found this item</string>
+    <string name="mark_as_found">Mark as Found</string>
+    <string name="distance_to_item">Distance to item:</string>
+    <string name="item_marked_as_found">Item marked as found!</string>
+    <string name="go_to_location">Go to Location</string>
+    <string name="invalid_geopoint_format">Invalid GeoPoint format</string>
+    <string name="paste_geopoint_location">Paste GeoPoint location</string>
+    <string name="enable_location">Enable Location</string>
+    <string name="map">Map</string>
+    <string name="search_your_reports">Search your reports...</string>
 </resources>
