@@ -1,28 +1,35 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 
 @Composable
 fun ProfileScreen(navController: NavController) {
     val user = FirebaseAuth.getInstance().currentUser
     val userEmail = user?.email ?: "User not logged in"
     val userName = user?.displayName ?: "No name"
+
+    var isEditing by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf(userName) }
+
+    var isChangingPassword by remember { mutableStateOf(false) }
+    var newPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -31,18 +38,16 @@ fun ProfileScreen(navController: NavController) {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Profiilikuva
         Image(
-            painter = painterResource(id = R.drawable.ic_profile_placeholder), // Kuvan lataaminen drawable-kansiosta
+            painter = painterResource(id = R.drawable.ic_profile_placeholder),
             contentDescription = "Profile Image",
             modifier = Modifier
-                .size(120.dp) // Kuvan koko
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape) // Reunus kuvassa
+                .size(120.dp)
+                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Otsikko
         Text(
             text = stringResource(R.string.welcome, userName),
             style = MaterialTheme.typography.headlineSmall,
@@ -51,7 +56,6 @@ fun ProfileScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Email
         Text(
             text = stringResource(R.string.email) + ": $userEmail",
             style = MaterialTheme.typography.bodyMedium,
@@ -59,35 +63,85 @@ fun ProfileScreen(navController: NavController) {
         )
 
         Spacer(modifier = Modifier.height(30.dp))
-
-        // Erottimet
         Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f))
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Edit Profile Button
-        Button(
-            onClick = { navController.navigate("editProfile") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(stringResource(R.string.edit_profile), color = MaterialTheme.colorScheme.onPrimary)
+        // Muokkaa profiilia
+        if (isEditing) {
+            TextField(
+                value = newName,
+                onValueChange = { newName = it },
+                label = { Text("Uusi nimi") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                val updates = UserProfileChangeRequest.Builder()
+                    .setDisplayName(newName)
+                    .build()
+                user?.updateProfile(updates)?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        isEditing = false
+                    }
+                }
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("Tallenna muutokset")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { isEditing = false }, modifier = Modifier.fillMaxWidth()) {
+                Text("Peruuta")
+            }
+        } else {
+            Button(
+                onClick = { isEditing = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Muokkaa profiilia", color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Change Password Button
-        Button(
-            onClick = { changePassword() },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-        ) {
-            Text(stringResource(R.string.change_password), color = MaterialTheme.colorScheme.onSecondary)
+        // Vaihda salasana
+        if (isChangingPassword) {
+            TextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                label = { Text("Uusi salasana") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = {
+                user?.updatePassword(newPassword)?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("ProfileScreen", "Password updated")
+                        isChangingPassword = false
+                        newPassword = ""
+                    } else {
+                        Log.e("ProfileScreen", "Password change failed", task.exception)
+                    }
+                }
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("Vaihda salasana")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { isChangingPassword = false }, modifier = Modifier.fillMaxWidth()) {
+                Text("Peruuta")
+            }
+        } else {
+            Button(
+                onClick = { isChangingPassword = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text("Vaihda salasana", color = MaterialTheme.colorScheme.onSecondary)
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Log Out Button
+        // Kirjaudu ulos
         Button(
             onClick = {
                 FirebaseAuth.getInstance().signOut()
@@ -101,22 +155,9 @@ fun ProfileScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Go back to homepage button
+        // Palaa kotiin
         Button(onClick = { navController.navigate("home") }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.go_back))
-        }
-    }
-}
-
-fun changePassword() {
-    val user = FirebaseAuth.getInstance().currentUser
-    val newPassword = "UusiSalasana123" // Käyttäjän syöttämä uusi salasana
-
-    user?.updatePassword(newPassword)?.addOnCompleteListener { task ->
-        if (task.isSuccessful) {
-            Log.d("ProfileScreen", "Password updated successfully")
-        } else {
-            Log.e("ProfileScreen", "Password update failed", task.exception)
         }
     }
 }
