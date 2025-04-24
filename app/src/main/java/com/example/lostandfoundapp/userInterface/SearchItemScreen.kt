@@ -191,6 +191,23 @@ fun ItemDetails(
     val clipboardManager = LocalClipboardManager.current
     val locationText = item.location.toString()
 
+    // Extract the seconds field from the Timestamp object
+    val daysSinceReported = remember(item) {
+        val currentDate = System.currentTimeMillis() // Current timestamp in milliseconds
+
+        val timestamp = item.registeredAt
+
+        // Extract the seconds field and convert to milliseconds
+        val registeredDateMillis = timestamp.seconds * 1000 // Convert seconds to milliseconds
+
+        // Calculate the difference in milliseconds
+        val diffInMillis = currentDate - registeredDateMillis
+
+        // Convert milliseconds to days
+        val daysSinceReported = diffInMillis / (1000 * 60 * 60 * 24)
+        daysSinceReported
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = item.title) },
@@ -224,6 +241,11 @@ fun ItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display days since reported
+                Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
+                Spacer(modifier = Modifier.height(10.dp))
+                
                 if (item.showContactEmail) {
                     Text(
                         text = stringResource(R.string.contact, item.contactEmail),

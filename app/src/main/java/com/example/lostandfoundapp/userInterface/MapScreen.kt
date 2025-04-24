@@ -3,6 +3,7 @@ package com.example.lostandfoundapp.userInterface
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +30,11 @@ import com.google.maps.android.compose.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun MapScreen(navController: NavController) {
@@ -64,7 +70,14 @@ fun MapScreen(navController: NavController) {
             }
         }
 
-        items = databaseHelper.getLostItems()
+        // Max days limit (30 days)
+        val maxDaysOld = 30
+
+        // Fetch and filter items to show only those within 30 days
+        items = databaseHelper.getLostItems().filter {
+            val daysSinceReported = (System.currentTimeMillis() - it.registeredAt.seconds * 1000) / (1000 * 60 * 60 * 24)
+            daysSinceReported <= maxDaysOld
+        }
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
@@ -211,6 +224,24 @@ fun ItemDetails(
     var checked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
+    // Extract the seconds field from the Timestamp object
+    val daysSinceReported = remember(item) {
+        val currentDate = System.currentTimeMillis() // Current timestamp in milliseconds
+
+        val timestamp = item.registeredAt
+
+        // Extract the seconds field and convert to milliseconds
+        val registeredDateMillis = timestamp.seconds * 1000 // Convert seconds to milliseconds
+
+        // Calculate the difference in milliseconds
+        val diffInMillis = currentDate - registeredDateMillis
+
+        // Convert milliseconds to days
+        val daysSinceReported = diffInMillis / (1000 * 60 * 60 * 24)
+        daysSinceReported
+    }
+
+    // Calculate distance to the item from the devices distance
     val distanceInKm = remember(item, userLocation) {
         item.location?.let { itemLoc ->
             userLocation?.let { userLoc ->
@@ -251,7 +282,12 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(item.registeredAt.toDate().toString())
+                Text(item.registeredAt.toString())  // Just display the raw timestamp (milliseconds)
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Display days since reported
+                Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -289,7 +325,6 @@ fun ItemDetails(
         dismissButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.close))
-
             }
         }
     )

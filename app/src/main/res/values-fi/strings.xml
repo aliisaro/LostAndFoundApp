@@ -28,8 +28,8 @@
     <string name="latlng_info">Leveys- ja pituusaste asetetaan automaattisesti laitteen sijaintiin, mutta voit muuttaa niitä.</string>
     <string name="enter_longitude">Anna pituusaste</string>
     <string name="enter_latitude">Anna leveysaste</string>
-    <string name="no_image_selected">"  Ei valittua kuvaa"</string>
-    <string name="image_selected">"  Kuva valittu"</string>
+    <string name="no_image_selected">Ei valittua kuvaa</string>
+    <string name="image_selected">Kuva valittu</string>
     <string name="select_image">Valitse kuva</string>
     <string name="all">Kaikki</string>
     <string name="other">Muu</string>
@@ -90,4 +90,5 @@
     <string name="confirm_deletion">Vahvista poisto</string>
     <string name="failed_to_update_item">Virhe esineen päivittämisessä: %1$s</string>
     <string name="item_updated_successfully">Esine päivitetty onnistuneesti!</string>
+    <string name="days_since_reported">Päiviä ilmoituksesta: %1$s</string>
 </resources>
