@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,13 +34,13 @@ import java.util.*
 @Composable
 fun ReportItemScreen(navController: NavHostController) {
     // State variables to hold the form input values
-    val title = remember { mutableStateOf("") }
-    val description = remember { mutableStateOf("") }
-    val category = remember { mutableStateOf("") }
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
-    val latitude = remember { mutableStateOf("") }
-    val longitude = remember { mutableStateOf("") }
-    val checked = remember { mutableStateOf(false) }
+    val title = rememberSaveable { mutableStateOf("") }
+    val description = rememberSaveable { mutableStateOf("") }
+    val category = rememberSaveable { mutableStateOf("") }
+    val imageUri = rememberSaveable { mutableStateOf<Uri?>(null) }
+    val latitude = rememberSaveable { mutableStateOf("") }
+    val longitude = rememberSaveable { mutableStateOf("") }
+    val checked = rememberSaveable { mutableStateOf(false) }
 
     // For selecting images using ActivityResultContracts
     val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -214,6 +215,14 @@ fun ReportItemScreen(navController: NavHostController) {
                 )
             } else {
                 Text(text = stringResource(R.string.no_image_selected), color = Color.Gray)
+            }
+
+            // Go to take a picture with the camera
+            Button(
+                onClick = { navController.navigate("camera") },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.take_a_picture))
             }
         }
 

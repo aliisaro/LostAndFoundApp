@@ -53,8 +53,9 @@ fun CameraScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Button(onClick = { navController.navigate("home") }) {
-                Text(text = stringResource(R.string.go_back))
+
+            Button(onClick = { navController.popBackStack() }) {
+                Text(stringResource(R.string.go_back))
             }
         }
 

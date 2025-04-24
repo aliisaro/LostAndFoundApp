@@ -66,15 +66,6 @@ fun HomeScreen(navController: NavController) {
             Text(stringResource(R.string.edit_my_reports), color = MaterialTheme.colorScheme.onSecondary)
         }
 
-        // Go to take a picture with the camera
-        Button(
-            onClick = { navController.navigate("camera") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-        ) {
-            Text(stringResource(R.string.take_a_picture), color = MaterialTheme.colorScheme.onTertiary)
-        }
-
         // Go to Profile screen
         Button(
             onClick = { navController.navigate("profile") },

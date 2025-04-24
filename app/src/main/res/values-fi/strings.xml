@@ -18,7 +18,7 @@
     <string name="search_for_items">Etsi esineitä</string>
     <string name="report_item">Ilmoita esine</string>
     <string name="edit_my_reports">Muokkaa ilmoituksia</string>
-    <string name="take_a_picture">Avaa kamera</string>
+    <string name="take_a_picture">Ota kuva</string>
     <string name="go_to_profile">Avaa profiilisivu</string>
     <string name="statistics">Tilastot</string>
     <string name="logout_message">Olet kirjautunut ulos</string>
