@@ -245,10 +245,10 @@ fun ItemDetails(
                 Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
-                
+
                 if (item.showContactEmail) {
                     Text(
-                        text = stringResource(R.string.contact, item.contactEmail),
+                        text = stringResource(R.string.contact_email, item.contactEmail),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )

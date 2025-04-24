@@ -282,7 +282,7 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(item.registeredAt.toString())  // Just display the raw timestamp (milliseconds)
+                Text(item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -299,8 +299,7 @@ fun ItemDetails(
 
                 if (item.showContactEmail) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.contact), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text(item.contactEmail)
+                        Text(stringResource(R.string.contact_email, item.contactEmail), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
 

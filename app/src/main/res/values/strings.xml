@@ -57,7 +57,6 @@
     <string name="copy_location">Copy Location</string>
     <string name="location_copied_to_clipboard">Location copied to clipboard</string>
     <string name="location">Location:</string>
-    <string name="contact">"Contact: "</string>
     <string name="reported_at">Reported At:</string>
     <string name="description">Description:</string>
     <string name="category">Category:</string>
@@ -93,4 +92,5 @@
     <string name="failed_to_update_item">Failed to update item: %1$s</string>
     <string name="item_updated_successfully">Item updated successfully!</string>
     <string name="days_since_reported">Days since reported: %1$s</string>
+    <string name="contact_email">Contact: %1$s</string>
 </resources>
