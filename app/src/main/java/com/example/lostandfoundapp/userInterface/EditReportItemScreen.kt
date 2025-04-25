@@ -240,19 +240,25 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                 Checkbox(checked = checked.value, onCheckedChange = { checked.value = it })
             }
 
-            Button(onClick = { updateItemButtonAction() }) {
-                Text(stringResource(R.string.update_item))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Button(onClick = { updateItemButtonAction() }) {
+                    Text(stringResource(R.string.update_item))
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Button(
+                    onClick = { showDeleteConfirmation.value = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(stringResource(R.string.delete_report), color = Color.White)
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = { showDeleteConfirmation.value = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
-                Text(stringResource(R.string.delete_report), color = Color.White)
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
             Button(onClick = { navController.navigate("home") }) {
                 Text(stringResource(R.string.go_back))
             }

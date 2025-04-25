@@ -3,7 +3,6 @@ package com.example.lostandfoundapp.userInterface
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,11 +29,6 @@ import com.google.maps.android.compose.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun MapScreen(navController: NavController) {
@@ -89,13 +83,7 @@ fun MapScreen(navController: NavController) {
         ) {
             Text(stringResource(R.string.map), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = { navController.navigate("home") }) {
-                Text(stringResource(R.string.go_back))
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (!locationPermissionGranted.value) {
                 Button(onClick = {
@@ -116,26 +104,35 @@ fun MapScreen(navController: NavController) {
                         label = { Text(stringResource(R.string.paste_geopoint_location)) },
                         modifier = Modifier.fillMaxWidth()
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(onClick = {
-                        // Parse GeoPoint input
-                        val regex = """GeoPoint \{ latitude=([-\d.]+), longitude=([-\d.]+) \}""".toRegex()
-                        val matchResult = regex.find(searchGeoPoint)
-                        if (matchResult != null) {
-                            val latitude = matchResult.groupValues[1].toDouble()
-                            val longitude = matchResult.groupValues[2].toDouble()
-                            pastedLocation = LatLng(latitude, longitude)
-                            searchGeoPoint = ""
-                        } else {
-                            Toast.makeText(context,
-                                context.getString(R.string.invalid_geopoint_format), Toast.LENGTH_SHORT).show()
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(onClick = { navController.navigate("home") }) {
+                            Text(stringResource(R.string.go_back))
                         }
-                    }) {
-                        Text(stringResource(R.string.go_to_location))
+
+                        Spacer(modifier = Modifier.width(140.dp))
+
+                        Button(onClick = {
+                            // Parse GeoPoint input
+                            val regex = """GeoPoint \{ latitude=([-\d.]+), longitude=([-\d.]+) \}""".toRegex()
+                            val matchResult = regex.find(searchGeoPoint)
+                            if (matchResult != null) {
+                                val latitude = matchResult.groupValues[1].toDouble()
+                                val longitude = matchResult.groupValues[2].toDouble()
+                                pastedLocation = LatLng(latitude, longitude)
+                                searchGeoPoint = ""
+                            } else {
+                                Toast.makeText(context,
+                                    context.getString(R.string.invalid_geopoint_format), Toast.LENGTH_SHORT).show()
+                            }
+                        }) {
+                            Text(stringResource(R.string.go_to_location))
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     GoogleMapView(
                         items = items,

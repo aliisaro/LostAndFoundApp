@@ -1,7 +1,6 @@
 package com.example.lostandfoundapp.database
 
 import com.example.lostandfoundapp.model.Item
-import com.example.lostandfoundapp.model.User
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
