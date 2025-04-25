@@ -34,8 +34,7 @@ fun ProfileScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -71,7 +70,7 @@ fun ProfileScreen(navController: NavController) {
             TextField(
                 value = newName,
                 onValueChange = { newName = it },
-                label = { Text("Uusi nimi") },
+                label = { Text(stringResource(R.string.new_name)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -85,11 +84,11 @@ fun ProfileScreen(navController: NavController) {
                     }
                 }
             }, modifier = Modifier.fillMaxWidth()) {
-                Text("Tallenna muutokset")
+                Text(stringResource(R.string.save_changes))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { isEditing = false }, modifier = Modifier.fillMaxWidth()) {
-                Text("Peruuta")
+                Text(stringResource(R.string.cancel))
             }
         } else {
             Button(
@@ -97,7 +96,7 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Muokkaa profiilia", color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.edit_profile), color = MaterialTheme.colorScheme.onPrimary)
             }
         }
 
@@ -108,7 +107,7 @@ fun ProfileScreen(navController: NavController) {
             TextField(
                 value = newPassword,
                 onValueChange = { newPassword = it },
-                label = { Text("Uusi salasana") },
+                label = { Text(stringResource(R.string.new_password)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -127,7 +126,7 @@ fun ProfileScreen(navController: NavController) {
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { isChangingPassword = false }, modifier = Modifier.fillMaxWidth()) {
-                Text("Peruuta")
+                Text(stringResource(R.string.cancel))
             }
         } else {
             Button(
@@ -135,7 +134,7 @@ fun ProfileScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
-                Text("Vaihda salasana", color = MaterialTheme.colorScheme.onSecondary)
+                Text(stringResource(R.string.change_password), color = MaterialTheme.colorScheme.onSecondary)
             }
         }
 
