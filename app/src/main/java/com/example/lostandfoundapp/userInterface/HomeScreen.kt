@@ -99,5 +99,14 @@ fun HomeScreen(navController: NavController) {
         }
 
         LanguageSelector() // LanguageSelector at the bottom
+
+        // Go to Statistics screen
+        Button(
+            onClick = { navController.navigate("adminPanel") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+        ) {
+            Text(stringResource(R.string.admin_panel), color = MaterialTheme.colorScheme.onTertiary)
+        }
     }
 }

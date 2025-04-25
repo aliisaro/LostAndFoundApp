@@ -50,5 +50,11 @@ fun Navigation() {
         composable("searchItemEdit") {
             SearchItemEditScreen(navController)
         }
+        composable("adminPanel") {
+            AdminPanel(navController)
+        }
+        composable("adminSearch") {
+            AdminSearchItemScreen(navController)
+        }
     }
 }

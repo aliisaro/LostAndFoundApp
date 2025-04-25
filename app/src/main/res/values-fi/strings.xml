@@ -92,4 +92,6 @@
     <string name="item_updated_successfully">Esine päivitetty onnistuneesti!</string>
     <string name="days_since_reported">Päiviä ilmoituksesta: %1$s</string>
     <string name="contact_email">Yhteystiedot: %1$s</string>
+    <string name="admin_panel">Järjestelmävalvojan näkymä</string>
+    <string name="admin_panel_item">Poista Esineitä</string>
 </resources>

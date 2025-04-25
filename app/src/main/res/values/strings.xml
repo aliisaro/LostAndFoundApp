@@ -93,4 +93,6 @@
     <string name="item_updated_successfully">Item updated successfully!</string>
     <string name="days_since_reported">Days since reported: %1$s</string>
     <string name="contact_email">Contact: %1$s</string>
+    <string name="admin_panel">Admin Panel</string>
+    <string name="admin_panel_item">Delete Reports</string>
 </resources>
