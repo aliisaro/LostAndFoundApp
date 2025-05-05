@@ -8,11 +8,17 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun Navigation() {
+    // Initialize NavController
     val navController = rememberNavController()
 
+    // Check if user is logged in, navigate to home screen if logged in, otherwise to login
     val user = FirebaseAuth.getInstance().currentUser
 
-    NavHost(navController = navController, startDestination = if (user != null) "home" else "login") {
+    // Define navigation routes
+    NavHost(
+        navController = navController,
+        startDestination = if (user != null) "home" else "login"
+    ) {
         composable("login") {
             LoginScreen(navController)
         }

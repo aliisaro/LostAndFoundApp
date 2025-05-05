@@ -14,9 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.R
-import com.google.firebase.auth.FirebaseAuth
-import java.lang.reflect.Modifier
-
 
 @Composable
 fun LoggedOutScreen(navController: NavController) {
@@ -25,27 +22,27 @@ fun LoggedOutScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally)
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
         Spacer(modifier = androidx.compose.ui.Modifier.height(20.dp))
 
+        // Logout message
         Text(text = stringResource(R.string.logout_message))
 
         Spacer(modifier = androidx.compose.ui.Modifier.height(20.dp))
 
         // Go to login page button
         Button(onClick = {
-            // Navigate to the login page
             navController.navigate("login")
         }) {
             Text(text = stringResource(R.string.login))
         }
 
-        Text(text = stringResource(R.string.or))
+        Text(text = stringResource(R.string.or)) // Or text
 
         // Go to register page button
         Button(onClick = {
-            // Navigate to the register page
             navController.navigate("register")
         }) {
             Text(text = stringResource(R.string.register))

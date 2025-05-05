@@ -19,7 +19,9 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun RegisterScreen(navController: NavController) {
-    val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance() // Firebase authentication instance
+
+    // States for email and password inputs
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -28,11 +30,12 @@ fun RegisterScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally)
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Using default Text style
+        // Register text
         Text(text = stringResource(R.string.register), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -64,6 +67,7 @@ fun RegisterScreen(navController: NavController) {
                 val emailStr = email.value
                 val passwordStr = password.value
 
+                // Check if email and password are not empty
                 if (emailStr.isEmpty() || passwordStr.isEmpty()) {
                     // Error message if both fields are empty
                     Toast.makeText(
@@ -75,6 +79,7 @@ fun RegisterScreen(navController: NavController) {
                     return@Button
                 }
 
+                // Register user with Firebase Authentication
                 auth.createUserWithEmailAndPassword(emailStr, passwordStr)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {

@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Build
 import java.util.Locale
 
+// Helper function to apply a new locale to the app context
 fun updateLocale(context: Context, languageCode: String): Context {
     val locale = Locale(languageCode)
     Locale.setDefault(locale)

@@ -28,22 +28,20 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AdminSearchItemScreen(navController: NavController) {
+    // State variables for UI interactions
     var searchQuery by remember { mutableStateOf("") }
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
     var selectedCategory by remember { mutableStateOf("All") }
-    var sortOrderResId by remember { mutableStateOf(R.string.newest) }
+    var sortOrderResId by remember { mutableIntStateOf(R.string.newest) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch and filter data based on search query
+    // Load data and apply search filtering when query changes
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             val result = DatabaseHelper().getLostItems()
-            lostItems = if (searchQuery.isEmpty()) {
-                result
-            } else {
-                result.filter { it.title.contains(searchQuery, ignoreCase = true) }
-            }
+            lostItems = if (searchQuery.isEmpty()) result
+            else result.filter { it.title.contains(searchQuery, ignoreCase = true) }
         }
     }
 
@@ -52,7 +50,7 @@ fun AdminSearchItemScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
+        // Search bar and navigation button
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,8 +62,7 @@ fun AdminSearchItemScreen(navController: NavController) {
                 onValueChange = { searchQuery = it },
                 label = { Text(stringResource(R.string.search_for_item)) },
                 singleLine = true,
-                modifier = Modifier
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -75,8 +72,7 @@ fun AdminSearchItemScreen(navController: NavController) {
             }
         }
 
-
-        // Filtering by category
+        // Category filter chips
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,7 +96,7 @@ fun AdminSearchItemScreen(navController: NavController) {
             }
         }
 
-        // Sort dropdown
+        // Sorting dropdown menu
         var expanded by remember { mutableStateOf(false) }
         val currentSortLabel = stringResource(id = sortOrderResId)
 
@@ -129,7 +125,7 @@ fun AdminSearchItemScreen(navController: NavController) {
             }
         }
 
-        // Display "No results" if there are no items
+        // Filter and sort items
         val filteredItems = lostItems
             .filter {
                 (selectedCategory == "All" || it.category.equals(selectedCategory, ignoreCase = true)) &&
@@ -140,12 +136,14 @@ fun AdminSearchItemScreen(navController: NavController) {
                 else list.sortedByDescending { it.registeredAt }
             }
 
+        // List of filtered items
         LazyColumn {
             items(items = filteredItems) { item ->
                 AdminItemCard(item = item, onClick = { selectedItem = item })
             }
         }
 
+        // Show item details when selected
         selectedItem?.let { item ->
             AdminItemDetails(
                 item = item,
@@ -203,12 +201,14 @@ fun AdminItemDetails(
     val locationText = item.location.toString()
     var showConfirmDialog by remember { mutableStateOf(false) }
 
+    // Calculate how many days since item was reported
     val daysSinceReported = remember(item) {
         val currentDate = System.currentTimeMillis()
         val registeredDateMillis = item.registeredAt.seconds * 1000
         (currentDate - registeredDateMillis) / (1000 * 60 * 60 * 24)
     }
 
+    // Item detail dialog
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = item.title) },
@@ -238,7 +238,11 @@ fun AdminItemDetails(
 
                 if (item.showContactEmail) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(stringResource(R.string.contact_email, item.contactEmail), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(R.string.contact_email, item.contactEmail),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -248,15 +252,21 @@ fun AdminItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Copy location to clipboard
                 Button(onClick = {
                     clipboardManager.setText(AnnotatedString(locationText))
-                    Toast.makeText(context, context.getString(R.string.location_copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.location_copied_to_clipboard),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }) {
                     Text(stringResource(R.string.copy_location))
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Delete button
                 Button(
                     onClick = { showConfirmDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
@@ -272,6 +282,7 @@ fun AdminItemDetails(
         }
     )
 
+    // Confirm delete dialog
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
@@ -284,11 +295,19 @@ fun AdminItemDetails(
                         coroutineScope.launch {
                             try {
                                 DatabaseHelper().deleteItem(item.id)
-                                Toast.makeText(context, context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.item_deleted_successfully),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 onDismiss()
                                 onItemDeleted()
                             } catch (e: Exception) {
-                                Toast.makeText(context, context.getString(R.string.failed_to_delete_item), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.failed_to_delete_item),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     },

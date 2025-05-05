@@ -51,10 +51,11 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
     val imageChanged = remember { mutableStateOf(false) }
     val showDeleteConfirmation = remember { mutableStateOf(false) }
 
-    val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri.value = uri
-        imageChanged.value = true
-    }
+    val getContent =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri.value = uri
+            imageChanged.value = true
+        }
 
     val englishToLocalizedCategoryMap = mapOf(
         "clothing" to context.getString(R.string.clothing),
@@ -63,7 +64,8 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
         "other" to context.getString(R.string.other)
     )
 
-    val localizedToEnglishCategoryMap = englishToLocalizedCategoryMap.entries.associate { (eng, local) -> local to eng }
+    val localizedToEnglishCategoryMap =
+        englishToLocalizedCategoryMap.entries.associate { (eng, local) -> local to eng }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -71,7 +73,8 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
             item?.let {
                 title.value = it.title
                 description.value = it.description
-                category.value = englishToLocalizedCategoryMap[it.category] ?: context.getString(R.string.other)
+                category.value =
+                    englishToLocalizedCategoryMap[it.category] ?: context.getString(R.string.other)
                 latitude.value = it.location?.latitude?.toString() ?: ""
                 longitude.value = it.location?.longitude?.toString() ?: ""
                 checked.value = it.showContactEmail
@@ -80,8 +83,15 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
     }
 
     fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
@@ -94,8 +104,13 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
 
     fun updateItemButtonAction() {
         if (title.value.isEmpty() || description.value.isEmpty() || category.value.isEmpty() ||
-            latitude.value.isEmpty() || longitude.value.isEmpty()) {
-            Toast.makeText(context, context.getString(R.string.required_fields_error), Toast.LENGTH_SHORT).show()
+            latitude.value.isEmpty() || longitude.value.isEmpty()
+        ) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.required_fields_error),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -112,11 +127,16 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                         longitude = longitude.value.toDouble(),
                         showContactEmail = checked.value
                     )
-                    Toast.makeText(context,
-                        context.getString(R.string.item_updated_successfully), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.item_updated_successfully), Toast.LENGTH_SHORT
+                    ).show()
                 } catch (e: Exception) {
-                    Toast.makeText(context,
-                        context.getString(R.string.failed_to_update_item, e.message), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.failed_to_update_item, e.message),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -131,8 +151,10 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(context,
-                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT
+                    ).show()
                 }
         } else {
             updateToDatabase(null)
@@ -143,12 +165,16 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
         coroutineScope.launch {
             try {
                 DatabaseHelper().deleteItem(itemId)
-                Toast.makeText(context,
-                    context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT
+                ).show()
                 navController.navigate("home")
             } catch (e: Exception) {
-                Toast.makeText(context,
-                    context.getString(R.string.failed_to_delete_item, e.message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.failed_to_delete_item, e.message), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -163,12 +189,18 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                     coroutineScope.launch {
                         try {
                             DatabaseHelper().deleteItem(itemId)
-                            Toast.makeText(context,
-                                context.getString(R.string.item_deleted_successfully), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.item_deleted_successfully),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             navController.navigate("home")
                         } catch (e: Exception) {
-                            Toast.makeText(context,
-                                context.getString(R.string.failed_to_delete_item, e.message), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.failed_to_delete_item, e.message),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }) {
@@ -192,21 +224,41 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                 .verticalScroll(scrollState)
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = stringResource(R.string.edit_reported_item), style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = stringResource(R.string.edit_reported_item),
+                style = MaterialTheme.typography.headlineSmall
+            )
             Spacer(modifier = Modifier.height(20.dp))
 
-            TextField(value = title.value, onValueChange = { title.value = it }, label = { Text(stringResource(R.string.title)) }, modifier = Modifier.fillMaxWidth())
+            TextField(
+                value = title.value,
+                onValueChange = { title.value = it },
+                label = { Text(stringResource(R.string.title)) },
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(10.dp))
 
-            TextField(value = description.value, onValueChange = { description.value = it }, label = { Text(stringResource(R.string.description)) }, modifier = Modifier.fillMaxWidth())
+            TextField(
+                value = description.value,
+                onValueChange = { description.value = it },
+                label = { Text(stringResource(R.string.description)) },
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(stringResource(R.string.select_a_category), fontSize = 18.sp)
 
-            val categories = listOf(stringResource(R.string.clothing), stringResource(R.string.accessories), stringResource(R.string.keys), stringResource(R.string.other))
+            val categories = listOf(
+                stringResource(R.string.clothing),
+                stringResource(R.string.accessories),
+                stringResource(R.string.keys),
+                stringResource(R.string.other)
+            )
             categories.forEach { cat ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = category.value == cat, onClick = { category.value = cat })
+                    RadioButton(
+                        selected = category.value == cat,
+                        onClick = { category.value = cat })
                     Text(cat)
                 }
             }
@@ -218,7 +270,11 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 if (imageUri.value != null || it.imageUrl.isNotEmpty()) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF4CAF50))
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = Color(0xFF4CAF50)
+                    )
                     Text(stringResource(R.string.image_selected))
                 } else {
                     Text(stringResource(R.string.no_image_selected), color = Color.Gray)
@@ -226,12 +282,29 @@ fun EditReportItemScreen(navController: NavHostController, itemId: String) {
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            TextField(value = latitude.value, onValueChange = { latitude.value = it }, label = { Text("Latitude") }, modifier = Modifier.fillMaxWidth())
+            TextField(
+                value = latitude.value,
+                onValueChange = { latitude.value = it },
+                label = { Text("Latitude") },
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(10.dp))
-            TextField(value = longitude.value, onValueChange = { longitude.value = it }, label = { Text("Longitude") }, modifier = Modifier.fillMaxWidth())
-            Text(stringResource(R.string.autofill_coordinates), fontSize = 13.sp, color = Color.Gray)
+            TextField(
+                value = longitude.value,
+                onValueChange = { longitude.value = it },
+                label = { Text("Longitude") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                stringResource(R.string.autofill_coordinates),
+                fontSize = 13.sp,
+                color = Color.Gray
+            )
 
-            Button(onClick = { getCurrentLocation() }, modifier = Modifier.padding(vertical = 10.dp)) {
+            Button(
+                onClick = { getCurrentLocation() },
+                modifier = Modifier.padding(vertical = 10.dp)
+            ) {
                 Text(stringResource(R.string.use_current_location))
             }
 

@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.R
@@ -23,6 +22,7 @@ fun HomeScreen(navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Welcome message
         Text(
             text = stringResource(R.string.welcome_message),
             style = MaterialTheme.typography.headlineMedium,
@@ -31,7 +31,7 @@ fun HomeScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Go to map screen
+        // Button to go to map screen
         Button(
             onClick = { navController.navigate("map") },
             modifier = Modifier.fillMaxWidth(),
@@ -40,43 +40,56 @@ fun HomeScreen(navController: NavController) {
             Text(stringResource(R.string.open_map), color = MaterialTheme.colorScheme.onPrimary)
         }
 
-        // Go to search screen
+        // Button to go to item search screen
         Button(
             onClick = { navController.navigate("searchItem") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.search_for_items), color = MaterialTheme.colorScheme.onSecondary)
+            Text(
+                stringResource(R.string.search_for_items),
+                color = MaterialTheme.colorScheme.onSecondary
+            )
         }
 
-        // Go to report item screen
+        // Button to go to report item screen
         Button(
             onClick = { navController.navigate("reportItem") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text(stringResource(R.string.report_item), color = MaterialTheme.colorScheme.onSecondary)
+            Text(
+                stringResource(R.string.report_item),
+                color = MaterialTheme.colorScheme.onSecondary
+            )
         }
 
+        // Button to go to edit reports screen
         Button(
             onClick = { navController.navigate("searchItemEdit") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text(stringResource(R.string.edit_my_reports), color = MaterialTheme.colorScheme.onSecondary)
+            Text(
+                stringResource(R.string.edit_my_reports),
+                color = MaterialTheme.colorScheme.onSecondary
+            )
         }
 
-        // Go to Profile screen
+        // Button to go to Profile screen
         Button(
             onClick = { navController.navigate("profile") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
-            Text(stringResource(R.string.go_to_profile), color = MaterialTheme.colorScheme.onTertiary)
+            Text(
+                stringResource(R.string.go_to_profile),
+                color = MaterialTheme.colorScheme.onTertiary
+            )
         }
 
 
-        // Go to Statistics screen
+        // Button to go to Statistics screen
         Button(
             onClick = { navController.navigate("statistics") },
             modifier = Modifier.fillMaxWidth(),
@@ -86,7 +99,7 @@ fun HomeScreen(navController: NavController) {
         }
 
 
-        // Kirjaudu ulos -painike
+        // Log out button
         Button(
             onClick = {
                 FirebaseAuth.getInstance().signOut()
@@ -98,9 +111,7 @@ fun HomeScreen(navController: NavController) {
             Text(stringResource(R.string.log_out), color = MaterialTheme.colorScheme.onError)
         }
 
-        LanguageSelector() // LanguageSelector at the bottom
-
-        // Go to Statistics screen
+        // Button to go to Admin panel screen
         Button(
             onClick = { navController.navigate("adminPanel") },
             modifier = Modifier.fillMaxWidth(),
@@ -108,5 +119,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             Text(stringResource(R.string.admin_panel), color = MaterialTheme.colorScheme.onTertiary)
         }
+
+        LanguageSelector() // LanguageSelector at the bottom
     }
 }

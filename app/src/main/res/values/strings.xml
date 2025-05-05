@@ -98,4 +98,6 @@
     <string name="new_name">New name</string>
     <string name="admin_panel">Admin Panel</string>
     <string name="admin_panel_item">Delete Reports</string>
+    <string name="failed_to_change_password">Failed to change password</string>
+    <string name="password_updated">Password updated</string>
 </resources>

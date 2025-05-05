@@ -12,6 +12,7 @@ import com.example.lostandfoundapp.updateLocale
 
 class MainActivity : ComponentActivity() {
 
+    // Attach a context with updated locale before the activity is created
     override fun attachBaseContext(newBase: Context) {
         val langCode = newBase.getSharedPreferences("settings", MODE_PRIVATE)
             .getString("language", "en") ?: "en"
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            // Set up the theme and root composable
             LostAndFoundAppTheme {
                 Navigation()
             }
@@ -34,8 +36,8 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {
+    // Preview the app UI with theme applied
     LostAndFoundAppTheme {
-        // Your MainContent goes here
         Navigation()
     }
 }

@@ -28,14 +28,17 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SearchItemScreen(navController: NavController) {
+    // State variables
     var searchQuery by remember { mutableStateOf("") }
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
     var selectedCategory by remember { mutableStateOf("All") }
-    var sortOrderResId by remember { mutableStateOf(R.string.newest) }
+    var sortOrderResId by remember { mutableIntStateOf(R.string.newest) }
+
+    // Coroutine scope for launching coroutines
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch and filter data based on search query
+    // Fetch lost items when searchQuery changes
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             val result = DatabaseHelper().getLostItems()
@@ -52,7 +55,6 @@ fun SearchItemScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,6 +72,7 @@ fun SearchItemScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.width(8.dp))
 
+            // Button to go to home screen
             Button(onClick = { navController.navigate("home") }) {
                 Text(text = stringResource(R.string.go_back))
             }
@@ -132,7 +135,10 @@ fun SearchItemScreen(navController: NavController) {
         // Display "No results" if there are no items
         val filteredItems = lostItems
             .filter {
-                (selectedCategory == "All" || it.category.equals(selectedCategory, ignoreCase = true)) &&
+                (selectedCategory == "All" || it.category.equals(
+                    selectedCategory,
+                    ignoreCase = true
+                )) &&
                         (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true))
             }
             .let { list ->
@@ -213,6 +219,7 @@ fun ItemDetails(
         title = { Text(text = item.title) },
         text = {
             Column {
+                // Display item image
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = "Item Image",
@@ -223,6 +230,7 @@ fun ItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display item description
                 Text(
                     text = stringResource(R.string.description),
                     fontWeight = FontWeight.Bold,
@@ -232,6 +240,7 @@ fun ItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display reported date item was reported at
                 Text(
                     text = stringResource(R.string.reported_at),
                     fontWeight = FontWeight.Bold,
@@ -242,10 +251,15 @@ fun ItemDetails(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Display days since reported
-                Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    stringResource(R.string.days_since_reported, daysSinceReported),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display contact email if showContactEmail is true
                 if (item.showContactEmail) {
                     Text(
                         text = stringResource(R.string.contact_email, item.contactEmail),
@@ -255,6 +269,7 @@ fun ItemDetails(
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
+                // Display location
                 Text(
                     text = stringResource(R.string.location),
                     fontWeight = FontWeight.Bold,
@@ -264,12 +279,15 @@ fun ItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Add copy button for location
+                // Copy location button
                 Button(
                     onClick = {
                         clipboardManager.setText(AnnotatedString(locationText))
-                        Toast.makeText(context,
-                            context.getString(R.string.location_copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.location_copied_to_clipboard),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     },
                     modifier = Modifier.padding(top = 10.dp)
                 ) {
@@ -277,6 +295,7 @@ fun ItemDetails(
                 }
             }
         },
+        // Close button
         confirmButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.close))

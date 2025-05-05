@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.R
@@ -23,6 +22,7 @@ fun AdminPanel(navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Title of the screen
         Text(
             text = stringResource(R.string.admin_panel),
             style = MaterialTheme.typography.headlineMedium,
@@ -37,7 +37,10 @@ fun AdminPanel(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(R.string.admin_panel_item), color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                stringResource(R.string.admin_panel_item),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
 
         // Go to map screen
@@ -49,7 +52,7 @@ fun AdminPanel(navController: NavController) {
             Text(stringResource(R.string.go_back), color = MaterialTheme.colorScheme.onPrimary)
         }
 
-        // Kirjaudu ulos -painike
+        // Log out button
         Button(
             onClick = {
                 FirebaseAuth.getInstance().signOut()

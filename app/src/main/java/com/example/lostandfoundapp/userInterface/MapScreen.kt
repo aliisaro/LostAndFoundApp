@@ -1,6 +1,7 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.widget.Toast
@@ -40,7 +41,7 @@ fun MapScreen(navController: NavController) {
 
     var pastedLocation by remember { mutableStateOf<LatLng?>(null) }
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
-    var searchGeoPoint by remember { mutableStateOf<String>("") }
+    var searchGeoPoint by remember { mutableStateOf("") }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -211,6 +212,7 @@ fun GoogleMapView(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ItemDetails(
     item: Item,

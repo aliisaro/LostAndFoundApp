@@ -97,4 +97,6 @@
     <string name="new_name">Uusi nimi</string>
     <string name="admin_panel">Järjestelmävalvojan näkymä</string>
     <string name="admin_panel_item">Poista Esineitä</string>
+    <string name="failed_to_change_password">Salasanan vaihtaminen epäonnistui</string>
+    <string name="password_updated">Salasana päivitettty</string>
 </resources>

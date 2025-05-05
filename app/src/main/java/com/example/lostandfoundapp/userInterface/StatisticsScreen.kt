@@ -10,17 +10,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lostandfoundapp.database.DatabaseHelper
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.example.lostandfoundapp.R
 
 @Composable
 fun StatisticsScreen(navController: NavController) {
+    // State to hold statistics data and potential error message
     var stats by remember { mutableStateOf<Map<String, Int>?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    // Load stats when screen is shown
+    // Fetch statistics data when the screen is first composed
     LaunchedEffect(Unit) {
         try {
             val result = DatabaseHelper().getItemStatistics()
@@ -35,6 +34,7 @@ fun StatisticsScreen(navController: NavController) {
             .fillMaxSize()
             .padding(20.dp)
     ) {
+        // Screen title
         Text(
             text = stringResource(R.string.statistics),
             style = MaterialTheme.typography.headlineMedium,
@@ -43,27 +43,52 @@ fun StatisticsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (error != null) {
-            Text("Error: $error", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyLarge)
-        } else if (stats == null) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        } else {
-            // Displaying stats with simple cards and spacing
-            StatCard(title = stringResource(R.string.total_items_reported), value = stats!!["total"])
-            Spacer(modifier = Modifier.height(12.dp))
+        // Handle loading, error, or display of statistics
+        when {
+            error != null -> {
+                Text(
+                    text = "Error: $error",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            stats == null -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+            else -> {
+                // Total items reported
+                StatCard(
+                    title = stringResource(R.string.total_items_reported),
+                    value = stats!!["total"]
+                )
 
-            StatCard(title = stringResource(R.string.items_lost), value = stats!!["lost"], color = MaterialTheme.colorScheme.error)
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            StatCard(title = stringResource(R.string.items_found), value = stats!!["found"], color = MaterialTheme.colorScheme.secondary)
+                // Lost items
+                StatCard(
+                    title = stringResource(R.string.items_lost),
+                    value = stats!!["lost"],
+                    color = MaterialTheme.colorScheme.error
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = { navController.navigate("home") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(R.string.go_back))
+                // Found items
+                StatCard(
+                    title = stringResource(R.string.items_found),
+                    value = stats!!["found"],
+                    color = MaterialTheme.colorScheme.secondary
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Back to home button
+                Button(
+                    onClick = { navController.navigate("home") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(R.string.go_back))
+                }
             }
         }
     }
@@ -82,8 +107,15 @@ fun StatCard(title: String, value: Int?, color: Color = MaterialTheme.colorSchem
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
+            // Title of the stat
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Value or fallback text
             Text(
                 text = value?.toString() ?: "N/A",
                 style = MaterialTheme.typography.headlineMedium.copy(color = color)

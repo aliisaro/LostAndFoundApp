@@ -1,4 +1,5 @@
 package com.example.lostandfoundapp.userInterface
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
@@ -43,9 +44,10 @@ fun ReportItemScreen(navController: NavHostController) {
     val checked = rememberSaveable { mutableStateOf(false) }
 
     // For selecting images using ActivityResultContracts
-    val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri.value = uri
-    }
+    val getContent =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri.value = uri
+        }
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current // Access the context for showing Toast messages
@@ -56,8 +58,15 @@ fun ReportItemScreen(navController: NavHostController) {
 
     // Function to get the current location
     fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             // Request permissions or handle the error
             return
         }
@@ -79,19 +88,20 @@ fun ReportItemScreen(navController: NavHostController) {
     // Function to handle the "Report Item" button click
     fun reportItemButtonAction() {
         if (title.value.isNotEmpty() && description.value.isNotEmpty() && category.value.isNotEmpty() &&
-            latitude.value.isNotEmpty() && longitude.value.isNotEmpty() && imageUri.value != null) {
+            latitude.value.isNotEmpty() && longitude.value.isNotEmpty() && imageUri.value != null
+        ) {
 
             // Upload image to Firebase Storage
             val storageRef: StorageReference = FirebaseStorage.getInstance().reference
             val imageRef = storageRef.child("items/${UUID.randomUUID()}.jpg")
 
             imageRef.putFile(imageUri.value!!)
-                .addOnSuccessListener { taskSnapshot ->
+                .addOnSuccessListener {
                     imageRef.downloadUrl.addOnSuccessListener { uri ->
                         // Get the image URL after upload
                         val imageUrl = uri.toString()
 
-                        // Now add the item to Firestore with the image URL
+                        // Add the item to Fire store with the image URL
                         coroutineScope.launch(Dispatchers.Main) {
                             try {
                                 databaseHelper.addItem(
@@ -103,29 +113,41 @@ fun ReportItemScreen(navController: NavHostController) {
                                     longitude = longitude.value.toDouble(),
                                     showContactEmail = checked.value
                                 )
-                                // Show success Toast
-                                Toast.makeText(context,
-                                    context.getString(R.string.item_added_successfully), Toast.LENGTH_SHORT).show()
+                                // Show success message
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.item_added_successfully),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             } catch (e: Exception) {
-                                // Show error Toast
-                                Toast.makeText(context,
-                                    context.getString(R.string.failed_to_add_item), Toast.LENGTH_SHORT).show()
-                                Log.e("ReportItemScreen",
-                                    context.getString(R.string.error_adding_item))
+                                // Show error message
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.failed_to_add_item),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Log.e(
+                                    "ReportItemScreen",
+                                    context.getString(R.string.error_adding_item)
+                                )
                             }
                         }
                     }
                 }
-                .addOnFailureListener { e ->
-                    // Show error Toast if image upload fails
-                    Toast.makeText(context,
-                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT).show()
+                .addOnFailureListener {
+                    // Show error message if image upload fails
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.failed_to_upload_image), Toast.LENGTH_SHORT
+                    ).show()
                 }
 
         } else {
-            // Show error Toast if form fields are missing
-            Toast.makeText(context,
-                context.getString(R.string.required_fields_error), Toast.LENGTH_SHORT).show()
+            // Show error message if form fields are missing
+            Toast.makeText(
+                context,
+                context.getString(R.string.required_fields_error), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -136,7 +158,12 @@ fun ReportItemScreen(navController: NavHostController) {
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = stringResource(R.string.report_lost_item), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
+        // Title of the screen
+        Text(
+            text = stringResource(R.string.report_lost_item),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -163,6 +190,7 @@ fun ReportItemScreen(navController: NavHostController) {
         // Category selection using Radio Buttons
         Text(stringResource(R.string.select_a_category), fontSize = 18.sp)
 
+        // Radio Buttons for categories
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
@@ -248,12 +276,16 @@ fun ReportItemScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(text = stringResource(R.string.latlng_info),
+        // Information about latitude and longitude
+        Text(
+            text = stringResource(R.string.latlng_info),
             fontSize = 13.sp,
-            color = Color.Gray)
+            color = Color.Gray
+        )
 
-
-        Row(verticalAlignment = Alignment.CenterVertically,
+        // Checkbox to show contact email
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
         ) {
             Text(text = stringResource(R.string.show_email))
@@ -265,13 +297,15 @@ fun ReportItemScreen(navController: NavHostController) {
         }
 
         // Button to add the item
-        Button(onClick = { reportItemButtonAction()
+        Button(onClick = {
+            reportItemButtonAction()
         }) {
             Text(stringResource(R.string.report_item))
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Button to go back to the home screen
         Button(onClick = { navController.navigate("home") }) {
             Text(stringResource(R.string.go_back))
         }

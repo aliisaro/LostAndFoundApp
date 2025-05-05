@@ -11,7 +11,7 @@ class DatabaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // Add a lost item to Firestore
+    // Add a lost item to Fire store
     suspend fun addItem(
         title: String,
         description: String,
@@ -23,10 +23,7 @@ class DatabaseHelper {
     ) {
 
         val auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            throw Exception("User not authenticated")
-        }
+        val currentUser = auth.currentUser ?: throw Exception("User not authenticated")
 
         try {
             // Create a new document reference to get the generated ID
@@ -56,7 +53,7 @@ class DatabaseHelper {
         }
     }
 
-    // Get only lost items from Firestore
+    // Get only lost items from Fire store
     suspend fun getLostItems(): List<Item> {
         return try {
             // Fetch documents where 'lost' == true
@@ -76,7 +73,7 @@ class DatabaseHelper {
     // Mark an item as found
     suspend fun markItemAsFound(itemId: String, foundByUserId: String) {
         try {
-            // Reference to the item document in Firestore
+            // Reference to the item document in Fire store
             val itemRef = db.collection("items").document(itemId)
 
             // Update the item with the new values
@@ -89,7 +86,8 @@ class DatabaseHelper {
             throw Exception("Failed to mark item as found: ${e.message}")
         }
     }
-    //Updates an item
+
+    // Update an item
     suspend fun updateItem(
         itemId: String,
         title: String,
@@ -101,10 +99,7 @@ class DatabaseHelper {
         showContactEmail: Boolean
     ) {
         val auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            throw Exception("User not authenticated")
-        }
+        val currentUser = auth.currentUser ?: throw Exception("User not authenticated")
 
         try {
             val itemRef = db.collection("items").document(itemId)
@@ -130,10 +125,11 @@ class DatabaseHelper {
             throw Exception("Failed to update item: ${e.message}")
         }
     }
+
+    // Get item by ID
     suspend fun getItemById(itemId: String): Item? {
         val doc = db.collection("items").document(itemId).get().await()
         return if (doc.exists()) {
-            val data = doc.data
             val location = doc.getGeoPoint("location")
             Item(
                 id = doc.id,
@@ -148,6 +144,8 @@ class DatabaseHelper {
             null
         }
     }
+
+    // Delete item by ID from database
     suspend fun deleteItem(itemId: String) {
         val db = FirebaseFirestore.getInstance()
         db.collection("items").document(itemId).delete().await()
@@ -183,5 +181,3 @@ class DatabaseHelper {
         }
     }
 }
-
-

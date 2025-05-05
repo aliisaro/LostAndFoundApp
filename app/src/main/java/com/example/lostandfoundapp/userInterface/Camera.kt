@@ -1,7 +1,6 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
-import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -15,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -33,8 +31,8 @@ import com.example.lostandfoundapp.R
 @Composable
 fun CameraScreen(navController: NavController) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
     val imageCapture = remember { ImageCapture.Builder().build() }
 
@@ -75,7 +73,7 @@ fun CameraScreen(navController: NavController) {
                         val cameraProvider = cameraProviderFuture.get()
 
                         val preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
+                            it.surfaceProvider = previewView.surfaceProvider
                         }
 
                         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -116,8 +114,11 @@ fun CameraScreen(navController: NavController) {
                     ContextCompat.getMainExecutor(context),
                     object : ImageCapture.OnImageSavedCallback {
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                            Toast.makeText(context,
-                                context.getString(R.string.image_saved_to, photoFile.absolutePath), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.image_saved_to, photoFile.absolutePath),
+                                Toast.LENGTH_SHORT
+                            ).show()
 
                             // Broadcast to make image appear in gallery apps
                             val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
@@ -126,8 +127,11 @@ fun CameraScreen(navController: NavController) {
                         }
 
                         override fun onError(exception: ImageCaptureException) {
-                            Toast.makeText(context,
-                                context.getString(R.string.capture_failed, exception.message), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.capture_failed, exception.message),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 )
@@ -160,7 +164,7 @@ fun CameraPreview() {
                 val cameraProvider = cameraProviderFuture.get()
 
                 val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+                    it.surfaceProvider = previewView.surfaceProvider
                 }
 
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA

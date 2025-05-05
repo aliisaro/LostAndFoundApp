@@ -19,7 +19,9 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance() // Firebase authentication instance
+
+    // State variables for email and password
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
@@ -28,10 +30,12 @@ fun LoginScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally)
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Login title
         Text(text = stringResource(R.string.login), style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -63,6 +67,7 @@ fun LoginScreen(navController: NavController) {
                 val emailStr = email.value
                 val passwordStr = password.value
 
+                // Check if email and password are not empty
                 if (emailStr.isEmpty() || passwordStr.isEmpty()) {
                     // Error message if both fields are empty
                     Toast.makeText(
@@ -74,6 +79,7 @@ fun LoginScreen(navController: NavController) {
                     return@Button
                 }
 
+                // Attempt to sign in with email and password
                 auth.signInWithEmailAndPassword(emailStr, passwordStr)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
