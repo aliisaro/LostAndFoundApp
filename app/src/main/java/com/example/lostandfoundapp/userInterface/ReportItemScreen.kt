@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
 import com.google.android.gms.location.LocationServices
@@ -49,9 +50,9 @@ fun ReportItemScreen(navController: NavHostController) {
             imageUri.value = uri
         }
 
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() // Coroutine scope for asynchronous operations
     val context = LocalContext.current // Access the context for showing Toast messages
-    val databaseHelper = DatabaseHelper()
+    val databaseHelper = DatabaseHelper() // Database helper instance for Firestore operations
 
     // FusedLocationProviderClient for fetching location
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -198,9 +199,7 @@ fun ReportItemScreen(navController: NavHostController) {
                     onClick = { category.value = "Clothing" }
                 )
                 Text(stringResource(R.string.clothing))
-            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = category.value == "Accessories",
                     onClick = { category.value = "Accessories" }
@@ -214,15 +213,40 @@ fun ReportItemScreen(navController: NavHostController) {
                     onClick = { category.value = "Keys" }
                 )
                 Text(stringResource(R.string.keys))
-            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = category.value == "Other",
-                    onClick = { category.value = "Other" }
-                )
-                Text(stringResource(R.string.other))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = category.value == "Other",
+                        onClick = { category.value = "Other" }
+                    )
+                    Text(stringResource(R.string.other))
+                }
             }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Display whether image is selected
+        if (imageUri.value != null) {
+            // display image
+            AsyncImage(
+                model = imageUri.value,
+                contentDescription = "Selected image",
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(bottom = 10.dp)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = stringResource(R.string.image_selected))
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Image selected",
+                    tint = Color(0xFF4CAF50) // Green checkmark
+                )
+            }
+        } else {
+            Text(text = stringResource(R.string.no_image_selected), color = Color.Gray)
+
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -233,22 +257,11 @@ fun ReportItemScreen(navController: NavHostController) {
                 Text(text = stringResource(R.string.select_image))
             }
 
-            // Display selected image
-            if (imageUri.value != null) {
-                Text(text = stringResource(R.string.image_selected))
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Image selected",
-                    tint = Color(0xFF4CAF50) // Green checkmark
-                )
-            } else {
-                Text(text = stringResource(R.string.no_image_selected), color = Color.Gray)
-            }
+            Spacer(modifier = Modifier.width(10.dp))
 
             // Go to take a picture with the camera
             Button(
                 onClick = { navController.navigate("camera") },
-                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.take_a_picture))
             }
@@ -289,7 +302,6 @@ fun ReportItemScreen(navController: NavHostController) {
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
         ) {
             Text(text = stringResource(R.string.show_email))
-            Spacer(modifier = Modifier.width(8.dp))
             Checkbox(
                 checked = checked.value,
                 onCheckedChange = { checked.value = it }
@@ -311,6 +323,7 @@ fun ReportItemScreen(navController: NavHostController) {
         }
     }
 }
+
 
 
 

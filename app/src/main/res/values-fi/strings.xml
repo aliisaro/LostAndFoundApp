@@ -29,8 +29,8 @@
     <string name="enter_longitude">Anna pituusaste</string>
     <string name="enter_latitude">Anna leveysaste</string>
     <string name="no_image_selected">Ei valittua kuvaa</string>
-    <string name="image_selected">Kuva valittu</string>
-    <string name="select_image">Valitse kuva</string>
+    <string name="image_selected">"  Kuva valittu"</string>
+    <string name="select_image">"  Valitse kuva"</string>
     <string name="all">Kaikki</string>
     <string name="other">Muu</string>
     <string name="keys">Avaimet</string>

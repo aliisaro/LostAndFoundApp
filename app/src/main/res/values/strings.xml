@@ -31,8 +31,8 @@
     <string name="enter_longitude">Enter longitude</string>
     <string name="enter_latitude">Enter latitude</string>
     <string name="no_image_selected">No image selected</string>
-    <string name="image_selected">Image selected</string>
-    <string name="select_image">Select Image</string>
+    <string name="image_selected">"  Image selected"</string>
+    <string name="select_image">"  Select Image"</string>
     <string name="all">All</string>
     <string name="other">Other</string>
     <string name="keys">Keys</string>

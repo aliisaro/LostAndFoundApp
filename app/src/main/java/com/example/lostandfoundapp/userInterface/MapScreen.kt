@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,43 +38,46 @@ fun MapScreen(navController: NavController) {
     val context = LocalContext.current
     val databaseHelper = DatabaseHelper()
 
+    // State for items, initialized as an empty list
     var items by remember { mutableStateOf<List<Item>>(emptyList()) }
-    val locationPermissionGranted = remember { mutableStateOf(false) }
 
+    // State to track if location permission is granted
+    var locationPermissionGranted by remember { mutableStateOf(false) }
+
+    // State for the pasted location from the TextField
     var pastedLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    // State for the user's current location
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    // State for the text input in the search field
     var searchGeoPoint by remember { mutableStateOf("") }
 
+    // Launcher for requesting location permissions
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        locationPermissionGranted.value =
+        locationPermissionGranted =
             permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
 
+    // Fetch items and user location when the composable is first launched
     LaunchedEffect(Unit) {
-        locationPermissionGranted.value = ContextCompat.checkSelfPermission(
+        // Check if location permission is already granted
+        locationPermissionGranted = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (locationPermissionGranted.value) {
-            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    userLocation = LatLng(location.latitude, location.longitude)
-                }
+        // If permission is granted, fetch the user's last known location
+        if (locationPermissionGranted) {
+            fetchUserLocation(context) { location ->
+                userLocation = location
             }
         }
 
-        // Max days limit (30 days)
-        val maxDaysOld = 30
-
         // Fetch and filter items to show only those within 30 days
-        items = databaseHelper.getLostItems().filter {
-            val daysSinceReported = (System.currentTimeMillis() - it.registeredAt.seconds * 1000) / (1000 * 60 * 60 * 24)
-            daysSinceReported <= maxDaysOld
-        }
+        items = fetchRecentItems(databaseHelper)
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
@@ -82,11 +87,16 @@ fun MapScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(stringResource(R.string.map), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Text(
+                stringResource(R.string.map),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (!locationPermissionGranted.value) {
+            // Show button to request location permission if not granted
+            if (!locationPermissionGranted) {
                 Button(onClick = {
                     permissionLauncher.launch(
                         arrayOf(
@@ -99,6 +109,7 @@ fun MapScreen(navController: NavController) {
                 }
             } else {
                 Column {
+                    // Text field for pasting GeoPoint location
                     TextField(
                         value = searchGeoPoint,
                         onValueChange = { searchGeoPoint = it },
@@ -108,6 +119,7 @@ fun MapScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Row for navigation and location buttons
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(onClick = { navController.navigate("home") }) {
                             Text(stringResource(R.string.go_back))
@@ -115,19 +127,10 @@ fun MapScreen(navController: NavController) {
 
                         Spacer(modifier = Modifier.width(140.dp))
 
+                        // Button to navigate to the pasted location
                         Button(onClick = {
-                            // Parse GeoPoint input
-                            val regex = """GeoPoint \{ latitude=([-\d.]+), longitude=([-\d.]+) \}""".toRegex()
-                            val matchResult = regex.find(searchGeoPoint)
-                            if (matchResult != null) {
-                                val latitude = matchResult.groupValues[1].toDouble()
-                                val longitude = matchResult.groupValues[2].toDouble()
-                                pastedLocation = LatLng(latitude, longitude)
-                                searchGeoPoint = ""
-                            } else {
-                                Toast.makeText(context,
-                                    context.getString(R.string.invalid_geopoint_format), Toast.LENGTH_SHORT).show()
-                            }
+                            pastedLocation = parseGeoPoint(searchGeoPoint, context)
+                            searchGeoPoint = ""
                         }) {
                             Text(stringResource(R.string.go_to_location))
                         }
@@ -135,6 +138,7 @@ fun MapScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Google Map view
                     GoogleMapView(
                         items = items,
                         userLocation = userLocation,
@@ -142,8 +146,11 @@ fun MapScreen(navController: NavController) {
                         onItemFound = {
                             CoroutineScope(Dispatchers.Main).launch {
                                 items = databaseHelper.getLostItems()
-                                Toast.makeText(context,
-                                    context.getString(R.string.item_marked_as_found), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.item_marked_as_found),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     )
@@ -153,6 +160,64 @@ fun MapScreen(navController: NavController) {
     }
 }
 
+// Function to fetch the user's last known location
+@SuppressLint("MissingPermission")
+private fun fetchUserLocation(context: android.content.Context, onLocationFetched: (LatLng) -> Unit) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        if (location != null) {
+            onLocationFetched(LatLng(location.latitude, location.longitude))
+        }
+    }
+}
+
+// Function to fetch recent items (within 30 days)
+private suspend fun fetchRecentItems(databaseHelper: DatabaseHelper): List<Item> {
+    val maxDaysOld = 30
+    return databaseHelper.getLostItems().filter {
+        val daysSinceReported =
+            (System.currentTimeMillis() - it.registeredAt.seconds * 1000) / (1000 * 60 * 60 * 24)
+        daysSinceReported <= maxDaysOld
+    }
+}
+
+// Function to parse GeoPoint input
+private fun parseGeoPoint(geoPointString: String, context: android.content.Context): LatLng? {
+    val regex = """GeoPoint \{ latitude=([-\d.]+), longitude=([-\d.]+) \}""".toRegex()
+    val matchResult = regex.find(geoPointString)
+    return if (matchResult != null) {
+        val latitude = matchResult.groupValues[1].toDouble()
+        val longitude = matchResult.groupValues[2].toDouble()
+        LatLng(latitude, longitude)
+    } else {
+        Toast.makeText(
+            context,
+            context.getString(R.string.invalid_geopoint_format),
+            Toast.LENGTH_SHORT
+        ).show()
+        null
+    }
+}
+
+// Function to calculate distance between two points
+fun calculateDistance(
+    startLat: Double,
+    startLng: Double,
+    endLat: Double,
+    endLng: Double
+): Float {
+    val startLocation = Location("").apply {
+        latitude = startLat
+        longitude = startLng
+    }
+    val endLocation = Location("").apply {
+        latitude = endLat
+        longitude = endLng
+    }
+    return startLocation.distanceTo(endLocation) / 1000f
+}
+
+
 @Composable
 fun GoogleMapView(
     items: List<Item>,
@@ -160,11 +225,14 @@ fun GoogleMapView(
     pastedLocation: LatLng?,
     onItemFound: () -> Unit
 ) {
+
+    // Set default location for map
     val defaultLocation = LatLng(60.16952, 24.93545)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
     }
 
+    // State
     var selectedItem by remember { mutableStateOf<Item?>(null) }
 
     // Update camera position whenever the pasted location changes
@@ -195,8 +263,9 @@ fun GoogleMapView(
         }
     }
 
+    // if an item is selected, show its details in an AlertDialog
     selectedItem?.let { item ->
-        ItemDetails(
+        ItemDetailsOnMap(
             item = item,
             userLocation = userLocation,
             onDismiss = { selectedItem = null },
@@ -214,19 +283,24 @@ fun GoogleMapView(
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ItemDetails(
+fun ItemDetailsOnMap(
     item: Item,
     userLocation: LatLng?,
     onDismiss: () -> Unit,
     onConfirmFound: (Item) -> Unit
 ) {
+    // State to track checkbox state
     var checked by remember { mutableStateOf(false) }
+
+    // Coroutine scope for asynchronous operations
     val coroutineScope = rememberCoroutineScope()
 
     // Extract the seconds field from the Timestamp object
     val daysSinceReported = remember(item) {
-        val currentDate = System.currentTimeMillis() // Current timestamp in milliseconds
+        // Current timestamp in milliseconds
+        val currentDate = System.currentTimeMillis()
 
+        // Timestamp object from the Item
         val timestamp = item.registeredAt
 
         // Extract the seconds field and convert to milliseconds
@@ -260,6 +334,7 @@ fun ItemDetails(
         title = { Text(text = item.title) },
         text = {
             Column {
+                // Display item image
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = "Item Image",
@@ -270,44 +345,79 @@ fun ItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.description), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display item description
+                Text(
+                    stringResource(R.string.description),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(item.description)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.location), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display item location
+                Text(
+                    stringResource(R.string.location),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(item.location.toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display item reported date
+                Text(
+                    stringResource(R.string.reported_at),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Display days since reported
-                Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    stringResource(R.string.days_since_reported, daysSinceReported),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display distance to the item
                 if (distanceInKm != null) {
-                    Text(stringResource(R.string.distance_to_item), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        stringResource(R.string.distance_to_item),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                     Text(distanceInKm)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
+                // Display contact email if showContactEmail is true
                 if (item.showContactEmail) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.contact_email, item.contactEmail), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            stringResource(R.string.contact_email, item.contactEmail),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
                     }
                 }
 
+                // Checkbox to mark item as found
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.mark_as_found), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        stringResource(R.string.mark_as_found),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
                 }
             }
         },
+        // Confirm button only if checkbox is checked
         confirmButton = {
             if (checked) {
                 Button(onClick = {
@@ -320,27 +430,11 @@ fun ItemDetails(
                 }
             }
         },
+        // Dismiss button
         dismissButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.close))
             }
         }
     )
-}
-
-fun calculateDistance(
-    startLat: Double,
-    startLng: Double,
-    endLat: Double,
-    endLng: Double
-): Float {
-    val startLocation = Location("").apply {
-        latitude = startLat
-        longitude = startLng
-    }
-    val endLocation = Location("").apply {
-        latitude = endLat
-        longitude = endLng
-    }
-    return startLocation.distanceTo(endLocation) / 1000f
 }
