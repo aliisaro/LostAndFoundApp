@@ -13,6 +13,13 @@ import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(navController: NavController) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val userEmail = user?.email ?: ""
+
+    // List of emails that are allowed admin access
+    val adminEmails = listOf(
+        "admin1@example.com"
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -111,13 +118,15 @@ fun HomeScreen(navController: NavController) {
             Text(stringResource(R.string.log_out), color = MaterialTheme.colorScheme.onError)
         }
 
-        // Button to go to Admin panel screen
-        Button(
-            onClick = { navController.navigate("adminPanel") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-        ) {
-            Text(stringResource(R.string.admin_panel), color = MaterialTheme.colorScheme.onTertiary)
+        // Show Admin Panel button only if the user is in the allowed list
+        if (userEmail in adminEmails) {
+            Button(
+                onClick = { navController.navigate("adminPanel") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+                Text(stringResource(R.string.admin_panel), color = MaterialTheme.colorScheme.onTertiary)
+            }
         }
 
         LanguageSelector() // LanguageSelector at the bottom
