@@ -290,18 +290,22 @@ fun ReportItemScreen(navController: NavHostController) {
             )
         }
 
-        // Button to add the item
-        Button(onClick = {
-            reportItemButtonAction()
-        }) {
-            Text(stringResource(R.string.report_item))
-        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Button to add the item
+            Button(onClick = {
+                reportItemButtonAction()
+            }) {
+                Text(stringResource(R.string.report_item))
+            }
 
-        Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-        // Button to go back to the home screen
-        Button(onClick = { navController.navigate("home") }) {
-            Text(stringResource(R.string.go_back))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Button to go back to the home screen
+            Button(onClick = { navController.navigate("home") }) {
+                Text(stringResource(R.string.go_back))
+            }
         }
     }
 }

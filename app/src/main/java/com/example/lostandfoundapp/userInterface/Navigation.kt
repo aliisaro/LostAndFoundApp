@@ -43,7 +43,7 @@ fun Navigation() {
         composable("profile") {
             ProfileScreen(navController)
         }
-        composable("searchReports") {
+        composable("searchItem") {
             SearchReportsScreen(navController)
         }
         composable("statistics") {
@@ -53,7 +53,7 @@ fun Navigation() {
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
             EditReportItemScreen(navController, itemId)
         }
-        composable("searchOwnReports") {
+        composable("searchItemEdit") {
             SearchOwnReportsScreen(navController)
         }
         composable("adminPanel") {
