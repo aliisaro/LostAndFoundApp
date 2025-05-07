@@ -128,7 +128,10 @@ fun AdminSearchItemScreen(navController: NavController) {
         // Filter and sort items
         val filteredItems = lostItems
             .filter {
-                (selectedCategory == "All" || it.category.equals(selectedCategory, ignoreCase = true)) &&
+                (selectedCategory == "All" || it.category.equals(
+                    selectedCategory,
+                    ignoreCase = true
+                )) &&
                         (searchQuery.isEmpty() || it.title.contains(searchQuery, ignoreCase = true))
             }
             .let { list ->
@@ -214,6 +217,8 @@ fun AdminItemDetails(
         title = { Text(text = item.title) },
         text = {
             Column {
+
+                // Display item image
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = "Item Image",
@@ -224,18 +229,34 @@ fun AdminItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.description), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display item description
+                Text(
+                    stringResource(R.string.description),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(text = item.description)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display time item was reported
+                Text(
+                    stringResource(R.string.reported_at),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(text = item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display how many days since item was reported
+                Text(
+                    stringResource(R.string.days_since_reported, daysSinceReported),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
 
+                // Display contact email if available
                 if (item.showContactEmail) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
@@ -247,7 +268,12 @@ fun AdminItemDetails(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(stringResource(R.string.location), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                // Display item location
+                Text(
+                    stringResource(R.string.location),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
                 Text(text = locationText)
 
                 Spacer(modifier = Modifier.height(10.dp))

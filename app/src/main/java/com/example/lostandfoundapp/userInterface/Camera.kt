@@ -1,31 +1,42 @@
 package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
-import android.util.Log
-import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 import android.widget.Toast
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import com.google.accompanist.permissions.*
-import java.io.File
-import android.content.Intent
-import android.os.Environment
-import android.net.Uri
-import androidx.compose.ui.res.stringResource
 import com.example.lostandfoundapp.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import java.io.File
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -36,6 +47,7 @@ fun CameraScreen(navController: NavController) {
 
     val imageCapture = remember { ImageCapture.Builder().build() }
 
+    // Request camera permission
     LaunchedEffect(Unit) {
         if (!cameraPermissionState.status.isGranted) {
             cameraPermissionState.launchPermissionRequest()
@@ -52,6 +64,7 @@ fun CameraScreen(navController: NavController) {
             horizontalArrangement = Arrangement.End
         ) {
 
+            // Button to go back
             Button(onClick = { navController.popBackStack() }) {
                 Text(stringResource(R.string.go_back))
             }
@@ -59,6 +72,7 @@ fun CameraScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Camera
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,6 +113,7 @@ fun CameraScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Button to take picture
         Button(
             onClick = {
                 val name = "IMG_${System.currentTimeMillis()}.jpg"
@@ -143,48 +158,4 @@ fun CameraScreen(navController: NavController) {
             Text(stringResource(R.string.capture))
         }
     }
-}
-
-@Composable
-fun CameraPreview() {
-    val context = LocalContext.current
-    val lifecycleOwner = context as LifecycleOwner
-
-    AndroidView(
-        factory = { ctx ->
-            val previewView = PreviewView(ctx)
-            previewView.layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-
-            val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-
-                val preview = Preview.Builder().build().also {
-                    it.surfaceProvider = previewView.surfaceProvider
-                }
-
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                try {
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        preview
-                    )
-                } catch (e: Exception) {
-                    Log.e("CameraPreview", "Camera binding failed", e)
-                }
-            }, ContextCompat.getMainExecutor(ctx))
-
-            previewView
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
-    )
 }
