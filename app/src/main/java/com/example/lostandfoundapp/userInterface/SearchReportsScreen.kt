@@ -27,7 +27,7 @@ import com.example.lostandfoundapp.model.Item
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchItemScreen(navController: NavController) {
+fun SearchReportsScreen(navController: NavController) {
     // State variables
     var searchQuery by remember { mutableStateOf("") }
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
@@ -35,7 +35,6 @@ fun SearchItemScreen(navController: NavController) {
     var selectedCategory by remember { mutableStateOf("All") }
     var sortOrderResId by remember { mutableIntStateOf(R.string.newest) }
 
-    // Coroutine scope for launching coroutines
     val coroutineScope = rememberCoroutineScope()
 
     // Fetch lost items when searchQuery changes
@@ -61,6 +60,7 @@ fun SearchItemScreen(navController: NavController) {
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Search bar
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -132,7 +132,6 @@ fun SearchItemScreen(navController: NavController) {
             }
         }
 
-        // Display "No results" if there are no items
         val filteredItems = lostItems
             .filter {
                 (selectedCategory == "All" || it.category.equals(
@@ -167,6 +166,7 @@ fun ItemCard(item: Item, onClick: () -> Unit) {
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
+        // Display item image and title
         Row(
             modifier = Modifier
                 .fillMaxWidth()

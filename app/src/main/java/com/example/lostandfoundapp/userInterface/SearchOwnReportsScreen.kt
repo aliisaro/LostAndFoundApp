@@ -21,14 +21,17 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 @Composable
-fun SearchItemEditScreen(navController: NavController) {
+fun SearchOwnReportsScreen(navController: NavController) {
+    // State variables
     var searchQuery by remember { mutableStateOf("") }
     var lostItems by remember { mutableStateOf<List<Item>>(emptyList()) }
     var selectedCategory by remember { mutableStateOf("All") }
-    var sortOrderResId by remember { mutableStateOf(R.string.newest) }
-    val coroutineScope = rememberCoroutineScope()
+    var sortOrderResId by remember { mutableIntStateOf(R.string.newest) }
     val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
 
+    val coroutineScope = rememberCoroutineScope()
+
+    // Fetch lost items when searchQuery changes
     LaunchedEffect(searchQuery) {
         coroutineScope.launch {
             val result = DatabaseHelper().getLostItems()
@@ -51,6 +54,7 @@ fun SearchItemEditScreen(navController: NavController) {
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Search bar
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -61,11 +65,13 @@ fun SearchItemEditScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.width(8.dp))
 
+            // Button to go back home
             Button(onClick = { navController.navigate("home") }) {
                 Text(stringResource(R.string.go_back))
             }
         }
 
+        // Filtering by category
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,6 +95,7 @@ fun SearchItemEditScreen(navController: NavController) {
             }
         }
 
+        // Sort dropdown
         var expanded by remember { mutableStateOf(false) }
         val currentSortLabel = stringResource(id = sortOrderResId)
 
@@ -127,8 +134,6 @@ fun SearchItemEditScreen(navController: NavController) {
                 if (sortOrderResId == R.string.oldest) list.sortedBy { it.registeredAt }
                 else list.sortedByDescending { it.registeredAt }
             }
-
-
         LazyColumn {
             items(items = filteredItems) { item ->
                 UserItemCard(item = item) {
@@ -148,6 +153,7 @@ fun UserItemCard(item: Item, onClick: () -> Unit) {
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
+        // Display item image and title
         Row(
             modifier = Modifier
                 .fillMaxWidth()
