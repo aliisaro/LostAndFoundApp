@@ -50,9 +50,14 @@ fun ReportItemScreen(navController: NavHostController) {
             imageUri.value = uri
         }
 
-    val coroutineScope = rememberCoroutineScope() // Coroutine scope for asynchronous operations
-    val context = LocalContext.current // Access the context for showing Toast messages
-    val databaseHelper = DatabaseHelper() // Database helper instance for Firestore operations
+    // Coroutine scope for asynchronous operations
+    val coroutineScope = rememberCoroutineScope()
+
+    // Access the context for showing Toast messages
+    val context = LocalContext.current
+
+    // Database helper instance for Fire store operations
+    val databaseHelper = DatabaseHelper()
 
     // FusedLocationProviderClient for fetching location
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)

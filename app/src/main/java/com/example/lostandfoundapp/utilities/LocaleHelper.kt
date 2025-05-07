@@ -1,4 +1,4 @@
-package com.example.lostandfoundapp
+package com.example.lostandfoundapp.utilities
 
 import android.content.Context
 import android.content.res.Configuration

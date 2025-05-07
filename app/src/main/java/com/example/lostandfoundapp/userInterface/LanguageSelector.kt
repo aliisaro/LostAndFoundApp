@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.lostandfoundapp.R
-import com.example.lostandfoundapp.updateLocale
+import com.example.lostandfoundapp.utilities.updateLocale
 
 @Composable
 fun LanguageSelector() {
