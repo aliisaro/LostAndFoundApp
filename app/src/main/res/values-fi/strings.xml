@@ -77,7 +77,7 @@
     <string name="edit_profile">Muokkaa profiilia</string>
     <string name="welcome">Tervetuloa, %1$s</string>
     <string name="delete_report">Poista ilmoitus</string>
-    <string name="update_item">Päivitä esinettä</string>
+    <string name="update_item">Päivitä esine</string>
     <string name="show_contact_email">Näytä sähköposti-osoite</string>
     <string name="use_current_location">Käytä nykyistä sijaintia</string>
     <string name="autofill_coordinates">Täytä koordinaatit automaattisesti napauttamalla \'Käytä nykyistä sijaintia\'.</string>

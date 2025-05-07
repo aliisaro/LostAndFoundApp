@@ -33,6 +33,7 @@ fun MapContent(
     onConfirmFound: (Item) -> Unit
 ) {
     Column {
+        // TextField for pasting GeoPoint location
         TextField(
             value = searchGeoPoint,
             onValueChange = onSearchGeoPointChange,
@@ -42,6 +43,7 @@ fun MapContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Buttons for navigating to the pasted location and going back to home screen
         Row(verticalAlignment = Alignment.CenterVertically) {
             Button(onClick = {
                 onLocationSelected(parseGeoPoint(searchGeoPoint))
@@ -49,6 +51,9 @@ fun MapContent(
                 Text(stringResource(R.string.go_to_location))
             }
 
+            Spacer(modifier = Modifier.width(140.dp))
+
+            // Button to go back to home screen
             Button(onClick = { navController.navigate("home") }) {
                 Text(stringResource(R.string.go_back))
             }
@@ -56,6 +61,7 @@ fun MapContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Google map
         GoogleMapView(
             items = items,
             userLocation = userLocation,
@@ -73,6 +79,7 @@ fun GoogleMapView(
     pastedLocation: LatLng?,
     onConfirmFound: (Item) -> Unit
 ) {
+    // Default location for the map
     val defaultLocation = LatLng(60.16952, 24.93545)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
@@ -80,12 +87,14 @@ fun GoogleMapView(
 
     var selectedItem by remember { mutableStateOf<Item?>(null) }
 
+    // Move camera to user location when user location is available
     LaunchedEffect(pastedLocation) {
         pastedLocation?.let {
             cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 12f)
         }
     }
 
+    // Google map with markers for lost items
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -125,8 +134,8 @@ fun ItemDetailsOnMap(
     onDismiss: () -> Unit,
     onConfirmFound: (Item) -> Unit
 ) {
-    var checked by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    var checked by remember { mutableStateOf(false) }
 
     val daysSinceReported = remember(item) {
         val currentDate = System.currentTimeMillis()
@@ -154,6 +163,7 @@ fun ItemDetailsOnMap(
         title = { Text(text = item.title) },
         text = {
             Column {
+                // Display item image
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = "Item Image",
@@ -164,43 +174,51 @@ fun ItemDetailsOnMap(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display item description
                 Text(stringResource(R.string.description), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.description)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display item location
                 Text(stringResource(R.string.location), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.location.toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display item registered date
                 Text(stringResource(R.string.reported_at), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(item.registeredAt.toDate().toString())
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display days since reported
                 Text(stringResource(R.string.days_since_reported, daysSinceReported), fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Display distance to item if user location is available
                 if (distanceInKm != null) {
                     Text(stringResource(R.string.distance_to_item), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(distanceInKm)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
+                // Display contact email if showContactEmail is true
                 if (item.showContactEmail) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.contact_email, item.contactEmail), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
 
+                // Checkbox for marking item as found
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.mark_as_found), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Checkbox(checked = checked, onCheckedChange = { checked = it })
                 }
             }
         },
+        // Confirm button to mark item as found if checkbox is checked
         confirmButton = {
             if (checked) {
                 Button(onClick = {
@@ -213,6 +231,7 @@ fun ItemDetailsOnMap(
                 }
             }
         },
+        // Dismiss button to close the dialog
         dismissButton = {
             Button(onClick = onDismiss) {
                 Text(stringResource(R.string.close))
@@ -220,4 +239,3 @@ fun ItemDetailsOnMap(
         }
     )
 }
-

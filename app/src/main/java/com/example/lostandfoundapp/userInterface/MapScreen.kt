@@ -54,8 +54,6 @@ fun MapScreen(navController: NavController) {
                 userLocation = location
             }
         }
-
-        // Fetch items from database
         items = databaseHelper.getLostItems()
     }
 

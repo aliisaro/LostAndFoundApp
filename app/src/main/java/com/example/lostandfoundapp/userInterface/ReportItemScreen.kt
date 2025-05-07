@@ -2,7 +2,6 @@ package com.example.lostandfoundapp.userInterface
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -26,7 +25,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.lostandfoundapp.R
 import com.example.lostandfoundapp.database.DatabaseHelper
-import com.google.android.gms.location.LocationServices
+import com.example.lostandfoundapp.utilities.fetchUserLocation
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
@@ -44,52 +43,30 @@ fun ReportItemScreen(navController: NavHostController) {
     val longitude = rememberSaveable { mutableStateOf("") }
     val checked = rememberSaveable { mutableStateOf(false) }
 
-    // For selecting images using ActivityResultContracts
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val databaseHelper = DatabaseHelper()
+
     val getContent =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             imageUri.value = uri
         }
 
-    // Coroutine scope for asynchronous operations
-    val coroutineScope = rememberCoroutineScope()
 
-    // Access the context for showing Toast messages
-    val context = LocalContext.current
-
-    // Database helper instance for Fire store operations
-    val databaseHelper = DatabaseHelper()
-
-    // FusedLocationProviderClient for fetching location
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
-    // Function to get the current location
-    fun getCurrentLocation() {
+    // Fetch user location using the function from MapUtils.kt
+    LaunchedEffect(Unit) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Request permissions or handle the error
-            return
-        }
-
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            location?.let {
-                // Set the current latitude and longitude in the state
-                latitude.value = it.latitude.toString()
-                longitude.value = it.longitude.toString()
+            fetchUserLocation(context) { location ->
+                latitude.value = location.latitude.toString()
+                longitude.value = location.longitude.toString()
             }
         }
     }
 
-    // Call getCurrentLocation() when the screen is first displayed
-    LaunchedEffect(Unit) {
-        getCurrentLocation()
-    }
 
     // Function to handle the "Report Item" button click
     fun reportItemButtonAction() {
@@ -328,8 +305,3 @@ fun ReportItemScreen(navController: NavHostController) {
         }
     }
 }
-
-
-
-
-
