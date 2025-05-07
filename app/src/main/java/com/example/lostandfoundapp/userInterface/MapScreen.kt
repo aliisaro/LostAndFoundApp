@@ -103,7 +103,7 @@ fun MapScreen(navController: NavController) {
                     Text(stringResource(R.string.enable_location))
                 }
 
-                Button(onClick = { navController.navigate("home") }, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { navController.navigate("home") }) {
                     Text(stringResource(R.string.go_back))
                 }
 
