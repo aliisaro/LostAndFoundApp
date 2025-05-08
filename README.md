@@ -5,6 +5,7 @@ A mobile application to report, search, and manage lost and found items with geo
 ## Features
 - User authentication via Firebase
 - Report lost items with image and location
+- Edit/delete own reports
 - Search and filter lost items
 - Mark items as found
 - View lost items on a map
@@ -24,10 +25,11 @@ A mobile application to report, search, and manage lost and found items with geo
 - Home
 - Report Lost Item
 - View Items on Map
+- Search item reports
 - Edit Report
 - Profile
 - Statistics
 - Admin Panel
 
-## How to set u:
+## How to set up:
 
