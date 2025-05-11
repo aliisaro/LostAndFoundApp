@@ -33,3 +33,29 @@ A mobile application to report, search, and manage lost and found items with geo
 - Admin Panel
 
 ## How to set up:
+
+### Prerequisites
+- Android Studio (latest version)
+
+### Project Setup
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/aliisaro/LostAndFoundApp.git
+cd LostAndFoundApp
+```
+
+2. **Open the project in Android Studio:**
+
+- Go to **File > Open** and select the `LostAndFoundApp` directory.
+
+3. **Sync Gradle:**
+
+- Go to **File > Sync Project with Gradle Files**.
+
+4. **Run the Project:**
+
+- Select a connected device or emulator.
+- Click **Run > Run 'app'**.
+---
