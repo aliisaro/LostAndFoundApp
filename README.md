@@ -1,6 +1,6 @@
 # Lost and Found App
 
-A mobile application to report, search, and manage lost and found items with geolocation, image uploads, and admin tools. Built with Jetpack Compose, Firebase, and Google Maps SDK.
+A mobile application to report, search, and manage lost and found items with geolocation, image uploads, and admin tools.
 
 ## Features
 - User authentication via Firebase
@@ -32,4 +32,3 @@ A mobile application to report, search, and manage lost and found items with geo
 - Admin Panel
 
 ## How to set up:
-
