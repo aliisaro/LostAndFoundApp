@@ -32,12 +32,10 @@ A mobile application to report, search, and manage lost and found items with geo
 - Statistics
 - Admin Panel
 
-## How to set up:
+### Project Setup
 
 ### Prerequisites
 - Android Studio (latest version)
-
-### Project Setup
 
 1. **Clone the repository:**
 
