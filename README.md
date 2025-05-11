@@ -9,6 +9,7 @@ A mobile application to report, search, and manage lost and found items with geo
 - Search and filter lost items
 - Mark items as found
 - View lost items on a map
+- Copy/paste items' GeoCode locations to map
 - Multilingual support (English & Finnish)
 - Admin panel for managing reports
 - Expiry system for old lost items
@@ -22,7 +23,7 @@ A mobile application to report, search, and manage lost and found items with geo
 
 ## Screens
 - Login / Register
-- Home
+- Home Screen
 - Report Lost Item
 - View Items on Map
 - Search item reports
