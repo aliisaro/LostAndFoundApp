@@ -2,6 +2,8 @@
 
 A mobile application to report, search, and manage lost and found items with geolocation, image uploads, and admin tools.
 
+[![Watch the demo](demo/demo-thumbnail.png)](demo/demo.mp4)
+
 ## Features
 - User authentication via Firebase
 - Report lost items with image and location
