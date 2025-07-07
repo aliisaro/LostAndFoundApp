@@ -2,6 +2,8 @@
 
 A mobile application to report, search, and manage lost and found items with geolocation, image uploads, and admin tools.
 
+[Watch the Lost and Found App demo on YouTube](https://www.youtube.com/watch?v=7ez7mB4x1yM)
+
 ## Features
 - User authentication via Firebase
 - Report lost items with image and location
@@ -32,7 +34,7 @@ A mobile application to report, search, and manage lost and found items with geo
 - Statistics
 - Admin Panel
 
-### Project Setup
+## Project Setup
 
 ### Prerequisites
 - Android Studio (latest version)
