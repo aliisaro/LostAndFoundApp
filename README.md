@@ -53,13 +53,16 @@ git clone https://github.com/aliisaro/LostAndFoundApp.git
 cd LostAndFoundApp
 ```
 
+
 2. **Open the project in Android Studio:**
 
 - Go to **File > Open** and select the `LostAndFoundApp` directory.
 
+
 3. **Sync Gradle:**
 
 - Go to **File > Sync Project with Gradle Files**.
+
 
 4. **Google Maps API Key Setup**
 
@@ -75,6 +78,7 @@ cd LostAndFoundApp
 </resources>
 ```
 
+
 5. **Firebase Setup**
 
 - Go to [Firebase Console](https://console.firebase.google.com/)
@@ -86,7 +90,8 @@ cd LostAndFoundApp
    - Firestore Database
    - Storage (for images)
 
-4. **Run the Project:**
+     
+6. **Run the Project:**
 
 - Select a connected device or emulator.
 - Click **Run > Run 'app'**.
