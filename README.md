@@ -1,6 +1,6 @@
 # Lost and Found App
 
-A mobile application to report, search, and manage lost and found items with geolocation, image uploads, and admin tools.
+A mobile application to report, search, and manage lost and found items with maps, geolocation, image uploads, and admin tools.
 
 [Watch the Lost and Found App demo on YouTube](https://www.youtube.com/watch?v=7ez7mB4x1yM)
 
@@ -20,7 +20,7 @@ A mobile application to report, search, and manage lost and found items with geo
 - Kotlin + Jetpack Compose
 - Firebase Authentication & Firestore
 - Firebase Storage for image uploads
-- Google Maps SDK
+- Google API
 - CameraX for capturing images
 
 ## Screens
@@ -54,18 +54,18 @@ cd LostAndFoundApp
 
 - Go to **File > Sync Project with Gradle Files**.
 
-### Google Maps API Key Setup
+### Google API Key Setup
 
-This project uses Google Maps services, so you need to add your own API key as follows:
+This project uses Google services, so you need to add your own API key as follows:
 
-1. Create a new Google Maps API key in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+1. Create a new Google API key in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 
-2. Create a file at `app/src/main/res/values/google_maps_api.xml` and add the following:
+2. Create a file at `app/src/main/res/values/google_api_key.xml` and add the following:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="google_maps_key">YOUR_API_KEY_HERE</string>
+    <string name="google_api_key">YOUR_API_KEY_HERE</string>
 </resources>
 ```
 
