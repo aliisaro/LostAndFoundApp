@@ -36,5 +36,8 @@ gradlew.bat
 **/build/intermediates/
 **/build/generated/
 
+# Ignore google-services.json
+/app/google-services.json
+
 # Exclude API key
 /app/src/main/res/values/google_api_key.xml
