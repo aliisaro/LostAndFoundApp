@@ -20,7 +20,7 @@ A mobile application to report, search, and manage lost and found items with map
 - Kotlin + Jetpack Compose
 - Firebase Authentication & Firestore
 - Firebase Storage for image uploads
-- Google API
+- Google Maps SDK & Geolocation API
 - CameraX for capturing images
 
 ## Screens
