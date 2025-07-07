@@ -17,11 +17,12 @@ A mobile application to report, search, and manage lost and found items with map
 - Expiry system for old lost items
 
 ## Tech Stack
-- Kotlin + Jetpack Compose
-- Firebase Authentication & Firestore
-- Firebase Storage for image uploads
-- Google Maps SDK & Geolocation API
-- CameraX for capturing images
+-Language: Kotlin
+-Frontend (UI): Jetpack Compose
+-Backend: Firebase Authentication & Firestore
+-Storage: Firebase Storage (image uploads)
+-Maps & Location: Google Maps SDK & Geolocation API
+-Camera: CameraX
 
 ## Screens
 - Login / Register
@@ -34,10 +35,16 @@ A mobile application to report, search, and manage lost and found items with map
 - Statistics
 - Admin Panel
 
+---
+
 ## Project Setup
 
 ### Prerequisites
-- Android Studio (latest version)
+-Android Studio
+-A Firebase project
+-A Google Cloud project with Maps API enabled
+
+---
 
 1. **Clone the repository:**
 
@@ -54,29 +61,28 @@ cd LostAndFoundApp
 
 - Go to **File > Sync Project with Gradle Files**.
 
-### Google API Key Setup
+4. **Google Maps API Key Setup**
 
-This project uses Google services, so you need to add your own API key as follows:
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Create a new API key
+3. Create a file at:
+    app/src/main/res/values/google_api_key.xml
+4. Add the following content:
 
-1. Create a new Google API key in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-
-2. Create a file at `app/src/main/res/values/google_api_key.xml` and add the following:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="google_api_key">YOUR_API_KEY_HERE</string>
 </resources>
-```
 
-### Firebase Setup
-
-To run this app, you need to provide your own `google-services.json` file.
+5. **Firebase Setup**
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or use an existing one
+2. Create a new project
 3. Add an Android app and download the `google-services.json` file
 4. Place it in the project at `app/google-services.json`
+5. Enable the following Firebase services:
+   -Authentication (Email/Password)
+   -Firestore Database
+   -Storage (for images)
 
 4. **Run the Project:**
 
