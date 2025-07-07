@@ -35,3 +35,6 @@ gradlew.bat
 /test-results/
 **/build/intermediates/
 **/build/generated/
+
+# Exclude API key
+/app/src/main/res/values/google_maps_api_key.xml

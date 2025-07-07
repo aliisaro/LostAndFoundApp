@@ -52,6 +52,21 @@ cd LostAndFoundApp
 
 - Go to **File > Sync Project with Gradle Files**.
 
+### Google Maps API Key Setup
+
+This project uses Google Maps services, so you need to add your own API key as follows:
+
+1. Create a new Google Maps API key in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+
+2. Create a file at `app/src/main/res/values/google_maps_api.xml` and add the following:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_maps_key">YOUR_API_KEY_HERE</string>
+</resources>
+```
+
 4. **Run the Project:**
 
 - Select a connected device or emulator.
