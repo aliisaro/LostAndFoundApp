@@ -69,6 +69,15 @@ This project uses Google Maps services, so you need to add your own API key as f
 </resources>
 ```
 
+### Firebase Setup
+
+To run this app, you need to provide your own `google-services.json` file.
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or use an existing one
+3. Add an Android app and download the `google-services.json` file
+4. Place it in the project at `app/google-services.json`
+
 4. **Run the Project:**
 
 - Select a connected device or emulator.
