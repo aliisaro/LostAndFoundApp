@@ -40,9 +40,9 @@ A mobile application to report, search, and manage lost and found items with map
 ## Project Setup
 
 ### Prerequisites
--Android Studio
--A Firebase project
--A Google Cloud project with Maps API enabled
+- Android Studio
+- A Firebase project
+- A Google Cloud project with Maps API enabled
 
 ---
 
@@ -69,9 +69,11 @@ cd LostAndFoundApp
     app/src/main/res/values/google_api_key.xml
 4. Add the following content:
 
+```xml
 <resources>
     <string name="google_api_key">YOUR_API_KEY_HERE</string>
 </resources>
+```
 
 5. **Firebase Setup**
 
@@ -80,9 +82,9 @@ cd LostAndFoundApp
 3. Add an Android app and download the `google-services.json` file
 4. Place it in the project at `app/google-services.json`
 5. Enable the following Firebase services:
-   -Authentication (Email/Password)
-   -Firestore Database
-   -Storage (for images)
+   - Authentication (Email/Password)
+   - Firestore Database
+   - Storage (for images)
 
 4. **Run the Project:**
 
