@@ -63,11 +63,11 @@ cd LostAndFoundApp
 
 4. **Google Maps API Key Setup**
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-2. Create a new API key
-3. Create a file at:
+- Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+- Create a new API key
+- Create a file at:
     app/src/main/res/values/google_api_key.xml
-4. Add the following content:
+- Add the following content:
 
 ```xml
 <resources>
@@ -77,11 +77,11 @@ cd LostAndFoundApp
 
 5. **Firebase Setup**
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Add an Android app and download the `google-services.json` file
-4. Place it in the project at `app/google-services.json`
-5. Enable the following Firebase services:
+- Go to [Firebase Console](https://console.firebase.google.com/)
+- Create a new project
+- Add an Android app and download the `google-services.json` file
+- Place it in the project at `app/google-services.json`
+-  Enable the following Firebase services:
    - Authentication (Email/Password)
    - Firestore Database
    - Storage (for images)
