@@ -17,12 +17,12 @@ A mobile application to report, search, and manage lost and found items with map
 - Expiry system for old lost items
 
 ## Tech Stack
--Language: Kotlin
--Frontend (UI): Jetpack Compose
--Backend: Firebase Authentication & Firestore
--Storage: Firebase Storage (image uploads)
--Maps & Location: Google Maps SDK & Geolocation API
--Camera: CameraX
+- Language: Kotlin
+- Frontend (UI): Jetpack Compose
+- Backend: Firebase Authentication & Firestore
+- Storage: Firebase Storage (image uploads)
+- Maps & Location: Google Maps SDK & Geolocation API
+- Camera: CameraX
 
 ## Screens
 - Login / Register
